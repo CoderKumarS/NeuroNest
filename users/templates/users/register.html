@@ -1,0 +1,317 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Register - EduLearn{% endblock %}
+
+{% block content %}
+<div
+    class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-6 sm:space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="mx-auto h-10 w-10 sm:h-12 sm:w-12 bg-primary-600 rounded-xl flex items-center justify-center">
+                <i class="fas fa-graduation-cap text-white text-lg sm:text-xl"></i>
+            </div>
+            <h2 class="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                Create Account
+            </h2>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                Join our E-Learning community
+            </p>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="space-y-2">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} p-4 rounded-lg border">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Registration Form -->
+        <div
+            class="bg-white dark:bg-gray-800 py-6 sm:py-8 px-4 sm:px-6 shadow-xl rounded-2xl border border-gray-200 dark:border-gray-700">
+            <form method="post" id="registerForm" class="space-y-4 sm:space-y-6">
+                {% csrf_token %}
+
+                <!-- Username -->
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Username
+                    </label>
+                    <input type="text" id="username" name="username" required autocomplete="username"
+                        class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200 text-sm sm:text-base"
+                        placeholder="Enter your username">
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Email Address
+                    </label>
+                    <input type="email" id="email" name="email" required autocomplete="email"
+                        class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200 text-sm sm:text-base"
+                        placeholder="Enter your email">
+                </div>
+
+                <!-- Password Fields -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Password
+                        </label>
+                        <input type="password" id="password" name="password" required autocomplete="new-password"
+                            class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200 text-sm sm:text-base"
+                            placeholder="Enter password">
+
+                        <!-- Password Strength Indicator -->
+                        <div class="mt-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-1.5 sm:h-2">
+                                    <div id="strengthBar" class="h-1.5 sm:h-2 rounded-full transition-all duration-300">
+                                    </div>
+                                </div>
+                                <span id="passwordStrength" class="text-xs text-gray-500 dark:text-gray-400"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password_confirm"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Confirm Password
+                        </label>
+                        <input type="password" id="password_confirm" name="password_confirm" required
+                            autocomplete="new-password"
+                            class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200 text-sm sm:text-base"
+                            placeholder="Confirm password">
+                    </div>
+                </div>
+
+                <!-- Role Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                        Select Your Role
+                    </label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="role-option relative">
+                            <input type="radio" id="role_student" name="role" value="student" checked class="sr-only">
+                            <label for="role_student"
+                                class="flex flex-col items-center p-3 sm:p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition-all duration-200 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20">
+                                <i class="fas fa-user-graduate text-xl sm:text-2xl text-gray-400 mb-1 sm:mb-2"></i>
+                                <span
+                                    class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Student</span>
+                            </label>
+                        </div>
+
+                        <div class="role-option relative">
+                            <input type="radio" id="role_instructor" name="role" value="instructor" class="sr-only">
+                            <label for="role_instructor"
+                                class="flex flex-col items-center p-3 sm:p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition-all duration-200 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20">
+                                <i class="fas fa-chalkboard-teacher text-xl sm:text-2xl text-gray-400 mb-1 sm:mb-2"></i>
+                                <span
+                                    class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Instructor</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="registerBtn"
+                    class="w-full flex justify-center py-2.5 sm:py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm sm:text-base font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+                    <span id="btnText">Create Account</span>
+                    <div id="loadingSpinner" class="hidden ml-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div class="mt-4 sm:mt-6 text-center">
+                <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                    Already have an account?
+                    <a href="{% url 'users:login' %}"
+                        class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 transition-colors">
+                        Sign in here
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styles for role selection */
+    .role-option input[type="radio"]:checked+label {
+        border-color: #3b82f6;
+        background-color: #eff6ff;
+        color: #1e40af;
+    }
+
+    .role-option input[type="radio"]:checked+label i {
+        color: #3b82f6;
+    }
+
+    /* Password strength colors */
+    .strength-weak {
+        background-color: #ef4444;
+        width: 25%;
+    }
+
+    .strength-fair {
+        background-color: #f59e0b;
+        width: 50%;
+    }
+
+    .strength-good {
+        background-color: #10b981;
+        width: 75%;
+    }
+
+    .strength-strong {
+        background-color: #059669;
+        width: 100%;
+    }
+
+    /* Message alert styles */
+    .alert-success {
+        background-color: #d1fae5;
+        border-color: #a7f3d0;
+        color: #065f46;
+    }
+
+    .alert-error {
+        background-color: #fee2e2;
+        border-color: #fecaca;
+        color: #991b1b;
+    }
+
+    .alert-info {
+        background-color: #dbeafe;
+        border-color: #bfdbfe;
+        color: #1e40af;
+    }
+
+    .dark .alert-success {
+        background-color: #064e3b;
+        border-color: #065f46;
+        color: #a7f3d0;
+    }
+
+    .dark .alert-error {
+        background-color: #7f1d1d;
+        border-color: #991b1b;
+        color: #fecaca;
+    }
+
+    .dark .alert-info {
+        background-color: #1e3a8a;
+        border-color: #1e40af;
+        color: #bfdbfe;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Role selection
+        const roleOptions = document.querySelectorAll('.role-option');
+        roleOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                // Remove selected class from all options
+                roleOptions.forEach(opt => {
+                    opt.querySelector('label').classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
+                    opt.querySelector('label i').classList.remove('text-primary-500');
+                    opt.querySelector('label span').classList.remove('text-primary-600', 'dark:text-primary-400');
+                });
+
+                // Add selected class to clicked option
+                const label = this.querySelector('label');
+                const icon = this.querySelector('i');
+                const text = this.querySelector('span');
+
+                label.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
+                icon.classList.add('text-primary-500');
+                text.classList.add('text-primary-600', 'dark:text-primary-400');
+
+                // Check the radio button
+                this.querySelector('input[type="radio"]').checked = true;
+            });
+        });
+
+        // Password strength indicator
+        const passwordInput = document.getElementById('password');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('passwordStrength');
+
+        passwordInput.addEventListener('input', function () {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+
+            strengthBar.className = 'h-1.5 sm:h-2 rounded-full transition-all duration-300';
+            strengthBar.classList.add(strength.class);
+            strengthText.textContent = strength.text;
+        });
+
+        function calculatePasswordStrength(password) {
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (/[a-z]/.test(password)) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            if (score < 2) return { class: 'strength-weak', text: 'Weak' };
+            if (score < 3) return { class: 'strength-fair', text: 'Fair' };
+            if (score < 4) return { class: 'strength-good', text: 'Good' };
+            return { class: 'strength-strong', text: 'Strong' };
+        }
+
+        // Form submission
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password_confirm').value;
+
+            if (password !== passwordConfirm) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return;
+            }
+
+            const registerBtn = document.getElementById('registerBtn');
+            const btnText = document.getElementById('btnText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            // Show loading state
+            registerBtn.disabled = true;
+            btnText.textContent = 'Creating account...';
+            loadingSpinner.classList.remove('hidden');
+        });
+
+        // Auto-hide messages after 5 seconds
+        setTimeout(function () {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(function (message) {
+                message.style.opacity = '0';
+                message.style.transition = 'opacity 0.5s ease';
+                setTimeout(function () {
+                    message.remove();
+                }, 500);
+            });
+        }, 5000);
+
+        // Add interactive effects to inputs
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function () {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+
+            input.addEventListener('blur', function () {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,476 @@
+{% extends 'base/base.html' %}
+
+{% block title %}EduLearn - Online Learning Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-bg text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                Learn Without <span class="text-yellow-300">Limits</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                Discover thousands of courses, master new skills, and advance your career with our world-class online
+                learning platform.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'users:register' %}"
+                    class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+                    Start Learning Today
+                </a>
+                <a href="#courses"
+                    class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
+                    Browse Courses
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Courses Section -->
+<section id="courses" class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Popular Courses
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Explore our most popular courses and start your learning journey today
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Course 1 -->
+            <div
+                class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <i class="fas fa-code text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Web Development</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Master HTML, CSS, JavaScript, and modern frameworks to build amazing websites.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-primary-600">$99</span>
+                        <a href="#"
+                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                            Enroll Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course 2 -->
+            <div
+                class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="h-48 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                    <i class="fas fa-chart-line text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Data Science</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Learn Python, machine learning, and data analysis to become a data scientist.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-primary-600">$149</span>
+                        <a href="#"
+                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                            Enroll Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course 3 -->
+            <div
+                class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="h-48 bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center">
+                    <i class="fas fa-palette text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">UI/UX Design</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Create beautiful and user-friendly interfaces with modern design principles.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-primary-600">$79</span>
+                        <a href="#"
+                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                            Enroll Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course 4 -->
+            <div
+                class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="h-48 bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
+                    <i class="fas fa-mobile-alt text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Mobile Development</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Build iOS and Android apps using React Native and Flutter.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-primary-600">$129</span>
+                        <a href="#"
+                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                            Enroll Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course 5 -->
+            <div
+                class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="h-48 bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Cybersecurity</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Protect systems and networks from digital attacks and threats.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-primary-600">$199</span>
+                        <a href="#"
+                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                            Enroll Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course 6 -->
+            <div
+                class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="h-48 bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
+                    <i class="fas fa-brain text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">AI & Machine Learning</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Explore artificial intelligence and machine learning algorithms.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-primary-600">$179</span>
+                        <a href="#"
+                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                            Enroll Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="#" class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors">
+                View All Courses
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-20 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                What Our Students Say
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Don't just take our word for it. Here's what our students have to say about their learning experience.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Testimonial 1 -->
+            <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                    <div
+                        class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold">
+                        JS
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="font-semibold text-gray-900 dark:text-white">John Smith</h4>
+                        <p class="text-gray-600 dark:text-gray-300">Web Developer</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300">
+                    "The web development course was amazing! I went from knowing nothing to building my own websites.
+                    The instructors are fantastic and the community is very supportive."
+                </p>
+                <div class="flex text-yellow-400 mt-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+
+            <!-- Testimonial 2 -->
+            <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                    <div
+                        class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold">
+                        MJ
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="font-semibold text-gray-900 dark:text-white">Maria Johnson</h4>
+                        <p class="text-gray-600 dark:text-gray-300">Data Scientist</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300">
+                    "The data science program completely changed my career. The hands-on projects and real-world
+                    applications made all the difference. Highly recommended!"
+                </p>
+                <div class="flex text-yellow-400 mt-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+
+            <!-- Testimonial 3 -->
+            <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                    <div
+                        class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold">
+                        DW
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="font-semibold text-gray-900 dark:text-white">David Wilson</h4>
+                        <p class="text-gray-600 dark:text-gray-300">UI/UX Designer</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300">
+                    "The design course helped me understand user experience principles that I use every day. The
+                    portfolio projects were incredibly valuable for my career."
+                </p>
+                <div class="flex text-yellow-400 mt-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                    Why Choose EduLearn?
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+                    We're committed to providing the best online learning experience with expert instructors,
+                    comprehensive curriculum, and a supportive community.
+                </p>
+
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-4 mt-1">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Expert Instructors</h3>
+                            <p class="text-gray-600 dark:text-gray-300">Learn from industry professionals with years of
+                                experience</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-4 mt-1">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Flexible Learning</h3>
+                            <p class="text-gray-600 dark:text-gray-300">Study at your own pace with lifetime access to
+                                course materials</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-4 mt-1">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Certificates</h3>
+                            <p class="text-gray-600 dark:text-gray-300">Earn industry-recognized certificates upon
+                                course completion</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div class="bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl p-8 text-white">
+                    <div class="grid grid-cols-2 gap-8 text-center">
+                        <div>
+                            <div class="text-3xl font-bold mb-2">50K+</div>
+                            <div class="text-primary-100">Students</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold mb-2">200+</div>
+                            <div class="text-primary-100">Courses</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold mb-2">95%</div>
+                            <div class="text-primary-100">Success Rate</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold mb-2">24/7</div>
+                            <div class="text-primary-100">Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-20 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Get In Touch
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Contact Form -->
+            <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send us a Message</h3>
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="first-name"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First
+                                Name</label>
+                            <input type="text" id="first-name" name="first_name"
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                placeholder="Enter your first name">
+                        </div>
+                        <div>
+                            <label for="last-name"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last
+                                Name</label>
+                            <input type="text" id="last-name" name="last_name"
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                placeholder="Enter your last name">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="email"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                        <input type="email" id="email" name="email"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter your email address">
+                    </div>
+                    <div>
+                        <label for="subject"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
+                        <input type="text" id="subject" name="subject"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter the subject">
+                    </div>
+                    <div>
+                        <label for="message"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
+                        <textarea id="message" name="message" rows="4"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter your message"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Contact Information</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">Email</h4>
+                                <p class="text-gray-600 dark:text-gray-300">info@edulearn.com</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-phone text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">Phone</h4>
+                                <p class="text-gray-600 dark:text-gray-300">+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">Address</h4>
+                                <p class="text-gray-600 dark:text-gray-300">123 Education St, Learning City, LC 12345
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#"
+                            class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

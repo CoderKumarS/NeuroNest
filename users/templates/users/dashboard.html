@@ -1,0 +1,327 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard - EduLearn{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Dashboard Header -->
+    <div class="bg-gradient-to-r from-primary-600 to-purple-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div class="mb-4 sm:mb-0">
+                    <h1 class="text-2xl sm:text-3xl font-bold">Welcome back, {{ user.username }}!</h1>
+                    <p class="text-primary-100 mt-1">Here's what's happening with your learning journey</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <div class="text-sm text-primary-100">Role</div>
+                        <div class="font-semibold">{{ user.get_role_display }}</div>
+                    </div>
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <!-- Welcome Card -->
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6 sm:mb-8 overflow-hidden">
+            <div class="bg-gradient-to-r from-primary-500 to-purple-600 h-1"></div>
+            <div class="p-4 sm:p-6">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                            Welcome to your Dashboard!
+                        </h2>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            You have successfully logged in to the E-Learning Platform. Here you can access your
+                            courses,
+                            track your progress, and manage your learning journey.
+                        </p>
+                        <div
+                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
+                            <i class="fas fa-user-graduate mr-2"></i>
+                            {{ user.get_role_display }}
+                        </div>
+                    </div>
+                    <div class="hidden sm:block ml-4">
+                        <div
+                            class="w-16 h-16 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            {% if is_student %}
+            <!-- Student Stats -->
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                <div
+                    class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-book text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{{ enrolled_courses }}
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Courses Enrolled</p>
+            </div>
+
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                <div
+                    class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{{ completed_lessons }}
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Lessons Completed</p>
+            </div>
+
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                <div
+                    class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-certificate text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{{ certificates_earned }}
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Certificates Earned</p>
+            </div>
+
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                <div
+                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-clock text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{{ study_hours }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Study Hours</p>
+            </div>
+            {% elif is_instructor %}
+            <!-- Instructor Stats -->
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                <div
+                    class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-chalkboard-teacher text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{{ created_courses }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Courses Created</p>
+            </div>
+
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                <div
+                    class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-users text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{{ total_students }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Total Students</p>
+            </div>
+
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                <div
+                    class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-book-open text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{{ total_lessons }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Total Lessons</p>
+            </div>
+
+            <div
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                <div
+                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-star text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{{ course_ratings }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Course Ratings</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Quick Actions -->
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6 sm:mb-8 overflow-hidden">
+            <div class="bg-gradient-to-r from-primary-500 to-purple-600 h-1"></div>
+            <div class="p-4 sm:p-6">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
+                    Quick Actions
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    {% if is_student %}
+                    <!-- Student Actions -->
+                    <a href="#"
+                        class="group bg-gradient-to-r from-primary-600 to-purple-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                        <i class="fas fa-book text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">Browse Courses</span>
+                    </a>
+
+                    <a href="#"
+                        class="group bg-gradient-to-r from-green-600 to-teal-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                        <i class="fas fa-chart-line text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">My Progress</span>
+                    </a>
+
+                    <a href="#"
+                        class="group bg-gradient-to-r from-yellow-600 to-orange-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                        <i class="fas fa-certificate text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">Certificates</span>
+                    </a>
+
+                    <a href="#"
+                        class="group bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                        <i class="fas fa-user-cog text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">Profile Settings</span>
+                    </a>
+                    {% elif is_instructor %}
+                    <!-- Instructor Actions -->
+                    <a href="#"
+                        class="group bg-gradient-to-r from-primary-600 to-purple-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                        <i class="fas fa-plus text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">Create Course</span>
+                    </a>
+
+                    <a href="#"
+                        class="group bg-gradient-to-r from-green-600 to-teal-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                        <i class="fas fa-chalkboard-teacher text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">My Courses</span>
+                    </a>
+
+                    <a href="#"
+                        class="group bg-gradient-to-r from-yellow-600 to-orange-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                        <i class="fas fa-chart-bar text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">Analytics</span>
+                    </a>
+
+                    <a href="#"
+                        class="group bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                        <i class="fas fa-users text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">Students</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="bg-gradient-to-r from-primary-500 to-purple-600 h-1"></div>
+            <div class="p-4 sm:p-6">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
+                    Recent Activity
+                </h3>
+
+                <!-- Empty State -->
+                <div class="text-center py-8 sm:py-12">
+                    <div
+                        class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-clock text-gray-400 text-2xl"></i>
+                    </div>
+                    {% if is_student %}
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No recent activity</h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Start exploring courses to see your activity here.
+                    </p>
+                    <a href="#"
+                        class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                        <i class="fas fa-search mr-2"></i>
+                        Browse Courses
+                    </a>
+                    {% elif is_instructor %}
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No recent activity</h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Create your first course to see your activity here.
+                    </p>
+                    <a href="#"
+                        class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Course
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add staggered animation to stat cards
+        const statCards = document.querySelectorAll('.bg-white.dark\\:bg-gray-800.rounded-xl');
+        statCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Add hover effects to action buttons
+        const actionButtons = document.querySelectorAll('a[href="#"]');
+        actionButtons.forEach(button => {
+            button.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-2px)';
+            });
+
+            button.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add ripple effect to buttons
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Add CSS for ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}
