@@ -4,9 +4,23 @@ from django.conf import settings
 User = settings.AUTH_USER_MODEL
 
 class Course(models.Model):
+    CATEGORY_CHOICES = [
+        ('programming', 'Programming'),
+        ('design', 'Design'),
+        ('business', 'Business'),
+        ('data_science', 'Data Science'),
+        ('marketing', 'Marketing'),
+        ('photography', 'Photography'),
+        ('music', 'Music'),
+        ('language', 'Language'),
+        ('health', 'Health & Fitness'),
+        ('other', 'Other'),
+    ]
+    
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'instructor'})
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

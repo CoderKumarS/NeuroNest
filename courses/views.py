@@ -6,8 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
-from django.db.models import Q, Count, Avg
+from django.db.models import Q, Count, Avg, Case, When, Value, CharField
 from django.template import Template, Context
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 # HTML Views for Course Management
 
 # HTML Views for Course Management
@@ -17,16 +20,68 @@ def course_list(request):
     courses = Course.objects.all().annotate(
         enrollment_count=Count('enrollment'),
         avg_rating=Avg('progress__score')
-    ).order_by('-created_at')
+    )
     
-    # Search functionality
+    # Get filter parameters
     search_query = request.GET.get('search', '')
+    instructor_filter = request.GET.get('instructor', '')
+    category_filter = request.GET.get('category', '')
+    sort_by = request.GET.get('sort', 'newest')
+    min_rating = request.GET.get('min_rating', '')
+    
+    # Search functionality - enhanced to include category
     if search_query:
         courses = courses.filter(
             Q(title__icontains=search_query) | 
             Q(description__icontains=search_query) |
-            Q(instructor__username__icontains=search_query)
+            Q(instructor__username__icontains=search_query) |
+            Q(category__icontains=search_query)
         )
+    
+    # Category filter
+    if category_filter:
+        courses = courses.filter(category=category_filter)
+    
+    # Instructor filter
+    if instructor_filter:
+        courses = courses.filter(instructor__username__icontains=instructor_filter)
+    
+    # Rating filter
+    if min_rating:
+        try:
+            min_rating_value = float(min_rating)
+            courses = courses.filter(avg_rating__gte=min_rating_value)
+        except (ValueError, TypeError):
+            pass
+    
+    # Sorting
+    if sort_by == 'newest':
+        courses = courses.order_by('-created_at')
+    elif sort_by == 'oldest':
+        courses = courses.order_by('created_at')
+    elif sort_by == 'popular':
+        courses = courses.order_by('-enrollment_count', '-created_at')
+    elif sort_by == 'rating':
+        courses = courses.order_by('-avg_rating', '-created_at')
+    elif sort_by == 'title':
+        courses = courses.order_by('title')
+    elif sort_by == 'category':
+        courses = courses.order_by('category', 'title')
+    else:
+        courses = courses.order_by('-created_at')
+    
+    # Get unique instructors for filter dropdown
+    instructors = User.objects.filter(role='instructor', course__isnull=False).distinct().order_by('username')
+    
+    # Get categories with course counts
+    categories_with_counts = Course.objects.values('category').annotate(
+        count=Count('id'),
+        category_display=Case(
+            *[When(category=choice[0], then=Value(choice[1])) for choice in Course.CATEGORY_CHOICES],
+            default=Value('Other'),
+            output_field=CharField()
+        )
+    ).order_by('category_display')
     
     # Pagination
     paginator = Paginator(courses, 9)  # 9 courses per page
@@ -36,7 +91,22 @@ def course_list(request):
     context = {
         'page_obj': page_obj,
         'search_query': search_query,
-        'total_courses': courses.count()
+        'instructor_filter': instructor_filter,
+        'category_filter': category_filter,
+        'sort_by': sort_by,
+        'min_rating': min_rating,
+        'total_courses': courses.count(),
+        'instructors': instructors,
+        'categories': categories_with_counts,
+        'category_choices': Course.CATEGORY_CHOICES,
+        'sort_options': [
+            ('newest', 'Newest First'),
+            ('oldest', 'Oldest First'),
+            ('popular', 'Most Popular'),
+            ('rating', 'Highest Rated'),
+            ('title', 'Alphabetical'),
+            ('category', 'By Category'),
+        ]
     }
     return render(request, 'courses/course_list.html', context)
 
@@ -493,10 +563,15 @@ def quiz_results(request, quiz_id):
 
 @login_required
 def my_courses(request):
-    """Display student's enrolled courses"""
+    """Display student's enrolled courses with filtering and sorting"""
     if request.user.role != 'student':
         messages.error(request, 'This page is for students only.')
         return redirect('courses:course_list')
+    
+    # Get filter parameters
+    search_query = request.GET.get('search', '').strip()
+    progress_filter = request.GET.get('progress', '')  # all, not_started, in_progress, completed
+    sort_by = request.GET.get('sort', 'recent')  # recent, oldest, progress_asc, progress_desc, alphabetical, completion
     
     enrollments = Enrollment.objects.filter(
         student=request.user
@@ -514,11 +589,30 @@ def my_courses(request):
             course=enrollment.course
         ).first()
         
-        enrolled_courses.append({
+        course_data = {
             'course': enrollment.course,
             'enrollment': enrollment,
             'progress': progress
-        })
+        }
+        
+        # Apply search filter
+        if search_query:
+            if (search_query.lower() not in enrollment.course.title.lower() and 
+                search_query.lower() not in enrollment.course.description.lower() and
+                search_query.lower() not in enrollment.course.instructor.username.lower()):
+                continue
+        
+        # Apply progress filter
+        if progress_filter:
+            progress_percent = progress.progress_percent() if progress else 0
+            if progress_filter == 'not_started' and progress_percent > 0:
+                continue
+            elif progress_filter == 'in_progress' and (progress_percent == 0 or progress_percent >= 100):
+                continue
+            elif progress_filter == 'completed' and progress_percent < 100:
+                continue
+        
+        enrolled_courses.append(course_data)
         
         # Calculate statistics
         if progress:
@@ -527,13 +621,40 @@ def my_courses(request):
             if progress.progress_percent() >= 100:
                 completed_courses += 1
     
+    # Apply sorting
+    if sort_by == 'oldest':
+        enrolled_courses.sort(key=lambda x: x['enrollment'].enrolled_at)
+    elif sort_by == 'progress_asc':
+        enrolled_courses.sort(key=lambda x: x['progress'].progress_percent() if x['progress'] else 0)
+    elif sort_by == 'progress_desc':
+        enrolled_courses.sort(key=lambda x: x['progress'].progress_percent() if x['progress'] else 0, reverse=True)
+    elif sort_by == 'alphabetical':
+        enrolled_courses.sort(key=lambda x: x['course'].title.lower())
+    elif sort_by == 'completion':
+        enrolled_courses.sort(key=lambda x: x['enrollment'].enrolled_at, reverse=True)
+        # Sort completed courses first, then by enrollment date
+        enrolled_courses.sort(key=lambda x: x['progress'].progress_percent() >= 100 if x['progress'] else False, reverse=True)
+    # Default 'recent' is already sorted by enrollment date desc
+    
     # Calculate average progress
     average_progress = total_progress / courses_with_progress if courses_with_progress > 0 else 0
+    
+    # Count courses by status for filter display
+    not_started_count = sum(1 for course in enrolled_courses if not course['progress'] or course['progress'].progress_percent() == 0)
+    in_progress_count = sum(1 for course in enrolled_courses if course['progress'] and 0 < course['progress'].progress_percent() < 100)
+    completed_count = sum(1 for course in enrolled_courses if course['progress'] and course['progress'].progress_percent() >= 100)
     
     context = {
         'enrolled_courses': enrolled_courses,
         'completed_courses': completed_courses,
-        'average_progress': average_progress
+        'average_progress': average_progress,
+        'search_query': search_query,
+        'progress_filter': progress_filter,
+        'sort_by': sort_by,
+        'not_started_count': not_started_count,
+        'in_progress_count': in_progress_count,
+        'completed_count': completed_count,
+        'total_enrolled': len(enrolled_courses)
     }
     return render(request, 'courses/my_courses.html', context)
 

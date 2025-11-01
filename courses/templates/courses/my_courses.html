@@ -10,18 +10,29 @@
         <p class="text-lg text-gray-600 dark:text-gray-300">Track your progress and continue learning</p>
     </div>
 
-    {% if enrolled_courses %}
+    {% if enrolled_courses or search_query or progress_filter %}
     <!-- Course Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <div class="flex items-center">
                 <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
                     <i class="fas fa-book text-blue-600 dark:text-blue-400 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ enrolled_courses|length }}</h3>
-                    <p class="text-gray-600 dark:text-gray-300">Enrolled Course{{ enrolled_courses|length|pluralize }}
-                    </p>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_enrolled }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Total Enrolled</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-play text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ in_progress_count }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">In Progress</p>
                 </div>
             </div>
         </div>
@@ -32,9 +43,7 @@
                     <i class="fas fa-trophy text-green-600 dark:text-green-400 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
-                        {{ completed_courses }}
-                    </h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ completed_count }}</h3>
                     <p class="text-gray-600 dark:text-gray-300">Completed</p>
                 </div>
             </div>
@@ -55,7 +64,101 @@
         </div>
     </div>
 
+    <!-- Filter and Search Bar -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+        <form method="GET" class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4" id="filterForm">
+            <!-- Search -->
+            <div class="flex-1">
+                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Search Courses
+                </label>
+                <div class="relative">
+                    <input type="text" id="search" name="search" value="{{ search_query }}"
+                        placeholder="Search by title, description, or instructor..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Filter -->
+            <div class="md:w-48">
+                <label for="progress" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Progress Status
+                </label>
+                <select id="progress" name="progress"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <option value="">All Courses</option>
+                    <option value="not_started" {% if progress_filter == 'not_started' %} selected{% endif %}>
+                        Not Started ({{ not_started_count }})
+                    </option>
+                    <option value="in_progress" {% if progress_filter == 'in_progress' %} selected{% endif %}>
+                        In Progress ({{ in_progress_count }})
+                    </option>
+                    <option value="completed" {% if progress_filter == 'completed' %} selected{% endif %}>
+                        Completed ({{ completed_count }})
+                    </option>
+                </select>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="md:w-48">
+                <label for="sort" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Sort By
+                </label>
+                <select id="sort" name="sort"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <option value="recent" {% if sort_by == 'recent' %} selected{% endif %}>Recently Enrolled</option>
+                    <option value="oldest" {% if sort_by == 'oldest' %} selected{% endif %}>Oldest First</option>
+                    <option value="progress_desc" {% if sort_by == 'progress_desc' %} selected{% endif %}>Highest Progress
+                    </option>
+                    <option value="progress_asc" {% if sort_by == 'progress_asc' %} selected{% endif %}>Lowest Progress
+                    </option>
+                    <option value="alphabetical" {% if sort_by == 'alphabetical' %} selected{% endif %}>Alphabetical
+                    </option>
+                    <option value="completion" {% if sort_by == 'completion' %} selected{% endif %}>Completed First
+                    </option>
+                </select>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex space-x-2">
+                <button type="submit"
+                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                    <span class="filter-text">Apply Filters</span>
+                    <span class="loading-text hidden">Applying...</span>
+                </button>
+                {% if search_query or progress_filter or sort_by != 'recent' %}
+                <a href="{% url 'courses:my_courses' %}"
+                    class="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
+                    Clear
+                </a>
+                {% endif %}
+            </div>
+        </form>
+
+        <!-- Results Info -->
+        {% if search_query or progress_filter %}
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                Showing {{ enrolled_courses|length }} course{{ enrolled_courses|length|pluralize }}
+                {% if search_query %}matching "{{ search_query }}"{% endif %}
+                {% if progress_filter %}
+                {% if search_query %}and{% endif %}
+                with status:
+                {% if progress_filter == 'not_started' %}Not Started
+                {% elif progress_filter == 'in_progress' %}In Progress
+                {% elif progress_filter == 'completed' %}Completed
+                {% endif %}
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
     <!-- Courses Grid -->
+    {% if enrolled_courses %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for course_data in enrolled_courses %}
         <div
@@ -71,6 +174,29 @@
                     {{ course_data.progress.progress_percent|floatformat:0 }}%
                 </div>
                 {% endif %}
+
+                <!-- Status Badge -->
+                <div class="absolute top-4 left-4">
+                    {% if course_data.progress %}
+                    {% if course_data.progress.progress_percent >= 100 %}
+                    <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        <i class="fas fa-check mr-1"></i>Completed
+                    </span>
+                    {% elif course_data.progress.progress_percent > 0 %}
+                    <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        <i class="fas fa-play mr-1"></i>In Progress
+                    </span>
+                    {% else %}
+                    <span class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        <i class="fas fa-pause mr-1"></i>Not Started
+                    </span>
+                    {% endif %}
+                    {% else %}
+                    <span class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        <i class="fas fa-pause mr-1"></i>Not Started
+                    </span>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="p-6">
@@ -85,9 +211,15 @@
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ course_data.progress.progress_percent|floatformat:0 }}%</span>
                     </div>
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style="width: {% if course_data.progress %}{{ course_data.progress.progress_percent }}%{% else %}0%{% endif %}">
-                        </div>
+                        {% if course_data.progress.progress_percent >= 100 %}
+                        <div class="bg-green-600 h-2 rounded-full transition-all duration-300"
+                            style="width: {{ course_data.progress.progress_percent }}%"></div>
+                        {% elif course_data.progress.progress_percent > 0 %}
+                        <div class="bg-yellow-500 h-2 rounded-full transition-all duration-300"
+                            style="width: {{ course_data.progress.progress_percent }}%"></div>
+                        {% else %}
+                        <div class="bg-gray-300 dark:bg-gray-600 h-2 rounded-full" style="width: 0%"></div>
+                        {% endif %}
                     </div>
                     {% if course_data.progress.score %}
                     <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
@@ -97,10 +229,14 @@
                 </div>
                 {% else %}
                 <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">0%</span>
+                    </div>
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                         <div class="bg-gray-300 dark:bg-gray-600 h-2 rounded-full" style="width: 0%"></div>
                     </div>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">Not started yet</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">Ready to start</p>
                 </div>
                 {% endif %}
 
@@ -118,19 +254,59 @@
 
                 <!-- Action Buttons -->
                 <div class="flex space-x-2">
+                    {% if course_data.progress and course_data.progress.progress_percent >= 100 %}
+                    <a href="{% url 'courses:course_detail' course_data.course.id %}"
+                        class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-center">
+                        <i class="fas fa-redo mr-1"></i>Review
+                    </a>
+                    {% else %}
                     <a href="{% url 'courses:course_detail' course_data.course.id %}"
                         class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
-                        Continue
+                        {% if course_data.progress and course_data.progress.progress_percent > 0 %}
+                        <i class="fas fa-play mr-1"></i>Continue
+                        {% else %}
+                        <i class="fas fa-play mr-1"></i>Start
+                        {% endif %}
                     </a>
+                    {% endif %}
                     <a href="{% url 'courses:course_progress' course_data.course.id %}"
                         class="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center">
-                        Progress
+                        <i class="fas fa-chart-line mr-1"></i>Progress
                     </a>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <!-- No Results Found -->
+    <div class="text-center py-16">
+        <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-search text-gray-400 dark:text-gray-500 text-3xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">No Courses Found</h3>
+        <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+            {% if search_query or progress_filter %}
+            No courses match your current filters. Try adjusting your search or filter criteria.
+            {% else %}
+            You haven't enrolled in any courses yet.
+            {% endif %}
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if search_query or progress_filter %}
+            <a href="{% url 'courses:my_courses' %}"
+                class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                <i class="fas fa-times mr-2"></i>Clear Filters
+            </a>
+            {% endif %}
+            <a href="{% url 'courses:course_list' %}"
+                class="{% if search_query or progress_filter %}border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% else %}bg-blue-600 text-white hover:bg-blue-700{% endif %} px-8 py-3 rounded-lg transition-colors font-semibold">
+                <i class="fas fa-search mr-2"></i>Browse Courses
+            </a>
+        </div>
+    </div>
+    {% endif %}
 
     {% else %}
     <!-- No Courses Enrolled -->
@@ -158,18 +334,70 @@
 </div>
 
 <script>
-    // Add some interactivity for progress animations
     document.addEventListener('DOMContentLoaded', function () {
-        const progressBars = document.querySelectorAll('.bg-blue-600');
-
+        // Progress bar animations
+        const progressBars = document.querySelectorAll('.bg-blue-600, .bg-yellow-500, .bg-green-600');
         progressBars.forEach(bar => {
             const width = bar.style.width;
             bar.style.width = '0%';
-
             setTimeout(() => {
                 bar.style.width = width;
             }, 300);
         });
+
+        // Auto-submit functionality for filters
+        const form = document.getElementById('filterForm');
+        if (form) {
+            const progressSelect = document.getElementById('progress');
+            const sortSelect = document.getElementById('sort');
+            const searchInput = document.getElementById('search');
+            const submitButton = form.querySelector('button[type="submit"]');
+            const filterText = submitButton.querySelector('.filter-text');
+            const loadingText = submitButton.querySelector('.loading-text');
+
+            // Auto-submit on dropdown change
+            function autoSubmit() {
+                filterText.classList.add('hidden');
+                loadingText.classList.remove('hidden');
+                submitButton.disabled = true;
+                form.submit();
+            }
+
+            progressSelect.addEventListener('change', autoSubmit);
+            sortSelect.addEventListener('change', autoSubmit);
+
+            // Search with debounce
+            let searchTimeout;
+            searchInput.addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (searchInput.value.length >= 3 || searchInput.value.length === 0) {
+                        autoSubmit();
+                    }
+                }, 500);
+            });
+
+            // Form submission handling
+            form.addEventListener('submit', function (e) {
+                if (!submitButton.disabled) {
+                    filterText.classList.add('hidden');
+                    loadingText.classList.remove('hidden');
+                    submitButton.disabled = true;
+                }
+            });
+
+            // Set selected values on page load (for back button support)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('progress')) {
+                progressSelect.value = urlParams.get('progress');
+            }
+            if (urlParams.get('sort')) {
+                sortSelect.value = urlParams.get('sort');
+            }
+            if (urlParams.get('search')) {
+                searchInput.value = urlParams.get('search');
+            }
+        }
     });
 </script>
 {% endblock %}

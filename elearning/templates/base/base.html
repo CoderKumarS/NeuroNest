@@ -49,6 +49,51 @@
         .dark .gradient-bg {
             background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
         }
+
+        /* Message animations */
+        .message-slide-in {
+            animation: slideInFromRight 0.3s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message-slide-out {
+            animation: slideOutToRight 0.3s ease-in forwards;
+        }
+
+        @keyframes slideOutToRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Message container styling */
+        #messages-container {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .message-alert {
+            max-height: 200px;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -199,6 +244,50 @@
         </div>
     </nav>
 
+    <!-- Messages -->
+    {% if messages %}
+    <div id="messages-container" class="fixed top-20 right-4 z-50 space-y-3 max-w-sm">
+        {% for message in messages %}
+        <div class="message-alert bg-white dark:bg-gray-800 border-l-4 
+                    {% if message.tags == 'success' %}border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200
+                    {% elif message.tags == 'error' %}border-red-500 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200
+                    {% elif message.tags == 'warning' %}border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200
+                    {% elif message.tags == 'info' %}border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200
+                    {% else %}border-gray-500 bg-gray-50 dark:bg-gray-900/20 text-gray-800 dark:text-gray-200{% endif %}
+                    rounded-lg shadow-lg p-4 transform transition-all duration-300 ease-in-out message-slide-in"
+            data-message-id="{{ forloop.counter }}">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    {% if message.tags == 'success' %}
+                    <i class="fas fa-check-circle text-green-500 text-lg"></i>
+                    {% elif message.tags == 'error' %}
+                    <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
+                    {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-triangle text-yellow-500 text-lg"></i>
+                    {% elif message.tags == 'info' %}
+                    <i class="fas fa-info-circle text-blue-500 text-lg"></i>
+                    {% else %}
+                    <i class="fas fa-bell text-gray-500 text-lg"></i>
+                    {% endif %}
+                </div>
+                <div class="ml-3 flex-1">
+                    <p class="text-sm font-medium">
+                        {{ message }}
+                    </p>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                    <button type="button"
+                        class="message-close inline-flex text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:text-gray-600 dark:focus:text-gray-200 transition-colors"
+                        onclick="dismissMessage(this)" title="Dismiss message">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Main Content -->
     <main class="min-h-screen">
         {% block content %}{% endblock %}
@@ -345,6 +434,41 @@
                 mobileMenu.classList.add('hidden');
             }
         });
+
+        // Messages functionality
+        function dismissMessage(button) {
+            const messageAlert = button.closest('.message-alert');
+            messageAlert.classList.remove('message-slide-in');
+            messageAlert.classList.add('message-slide-out');
+
+            setTimeout(() => {
+                if (messageAlert.parentNode) {
+                    messageAlert.remove();
+                }
+                // Remove container if no messages left
+                const container = document.getElementById('messages-container');
+                if (container && container.children.length === 0) {
+                    container.remove();
+                }
+            }, 300);
+        }
+
+        // Auto-dismiss messages after 4 seconds
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.message-alert');
+            messages.forEach((message, index) => {
+                // Stagger the auto-dismiss timing
+                setTimeout(() => {
+                    const closeButton = message.querySelector('.message-close');
+                    if (closeButton && message.parentNode) {
+                        dismissMessage(closeButton);
+                    }
+                }, 4000 + (index * 500)); // 4s, 4.5s, 5s, etc.
+            });
+        });
+
+        // Make dismissMessage globally available
+        window.dismissMessage = dismissMessage;
     </script>
 
     {% block extra_js %}{% endblock %}

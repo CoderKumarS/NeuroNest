@@ -26,25 +26,123 @@
 </div>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Results Info -->
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                {% if search_query %}
-                Search Results for "{{ search_query }}"
-                {% else %}
-                All Courses
-                {% endif %}
-            </h2>
-            <p class="text-gray-600 dark:text-gray-300">{{ total_courses }} course{{ total_courses|pluralize }} found
-            </p>
+    <!-- Filters and Results Info -->
+    <div class="mb-8">
+        <!-- Results Info and Filter Bar -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <!-- Left side - Title and Results Info -->
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        {% if search_query %}
+                        Search Results for "{{ search_query }}"
+                        {% else %}
+                        All Courses
+                        {% endif %}
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        {{ total_courses }} course{{ total_courses|pluralize }} found
+                        {% if category_filter %}• Category: {{ category_filter|title }}{% endif %}
+                        {% if instructor_filter %}• Instructor: {{ instructor_filter }}{% endif %}
+                        {% if min_rating %}• Rating: {{ min_rating }}+ stars{% endif %}
+                    </p>
+                </div>
+
+                <!-- Right side - Filters -->
+                <div class="lg:w-2/3">
+                    <form method="GET" class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4">
+                        <!-- Preserve search query -->
+                        {% if search_query %}
+                        <input type="hidden" name="search" value="{{ search_query }}">
+                        {% endif %}
+
+                        <!-- Category Filter -->
+                        <div class="flex-1">
+                            <label for="category"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Category
+                            </label>
+                            <select name="category" id="category"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                <option value="">All Categories</option>
+                                {% for category_code, category_name in category_choices %}
+                                <option value="{{ category_code }}" {% if category_filter == category_code %}selected{% endif %}>
+                                    {{ category_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Instructor Filter -->
+                        <div class="flex-1">
+                            <label for="instructor"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Instructor
+                            </label>
+                            <select name="instructor" id="instructor"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                <option value="">All Instructors</option>
+                                {% for instructor in instructors %}
+                                <option value="{{ instructor.username }}" {% if instructor_filter == instructor.username %}selected{% endif %}>
+                                    {{ instructor.username }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Rating Filter -->
+                        <div class="flex-1">
+                            <label for="min_rating"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Minimum Rating
+                            </label>
+                            <select name="min_rating" id="min_rating"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                <option value="">Any Rating</option>
+                                <option value="4.5">4.5+ Stars</option>
+                                <option value="4.0">4.0+ Stars</option>
+                                <option value="3.5">3.5+ Stars</option>
+                                <option value="3.0">3.0+ Stars</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort By -->
+                        <div class="flex-1">
+                            <label for="sort" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Sort By
+                            </label>
+                            <select name="sort" id="sort"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                {% for value, label in sort_options %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Filter Buttons -->
+                        <div class="flex space-x-2">
+                            <button type="submit"
+                                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-filter mr-2"></i>Apply Filters
+                            </button>
+                            <a href="{% url 'courses:course_list' %}"
+                                class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                                <i class="fas fa-times mr-2"></i>Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
+        <!-- Create Course Button -->
         {% if user.is_authenticated and user.role == 'instructor' %}
-        <a href="{% url 'courses:create_course' %}"
-            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-            <i class="fas fa-plus mr-2"></i>Create Course
-        </a>
+        <div class="flex justify-end mb-6">
+            <a href="{% url 'courses:create_course' %}"
+                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Create Course
+            </a>
+        </div>
         {% endif %}
     </div>
 
@@ -64,15 +162,24 @@
                 <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">{{ course.description|truncatewords:20 }}
                 </p>
 
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    <div class="flex items-center">
                         <i class="fas fa-user mr-1"></i>
                         <span>{{ course.instructor.username }}</span>
                     </div>
-                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center">
                         <i class="fas fa-users mr-1"></i>
-                        <span>{{ course.enrollment_count }} student{{ course.enrollment_count|pluralize }}</span>
+                        <span>{{ course.enrollment_count }} enrolled</span>
                     </div>
+                </div>
+
+                <!-- Category Badge -->
+                <div class="mb-3">
+                    <span
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        <i class="fas fa-tag mr-1"></i>
+                        {{ course.get_category_display }}
+                    </span>
                 </div>
 
                 <div class="flex items-center justify-between">
@@ -95,11 +202,11 @@
     <div class="flex justify-center">
         <nav class="flex items-center space-x-2">
             {% if page_obj.has_previous %}
-            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}"
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if instructor_filter %}&instructor={{ instructor_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
                 class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                 <i class="fas fa-angle-double-left"></i>
             </a>
-            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if instructor_filter %}&instructor={{ instructor_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
                 class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                 <i class="fas fa-angle-left"></i>
             </a>
@@ -108,20 +215,20 @@
             {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
             <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ num }}</span>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
-                href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}"
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if instructor_filter %}&instructor={{ instructor_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
                 class="px-4 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                 {{ num }}
-                </a>
+            </a>
                 {% endif %}
                 {% endfor %}
 
                 {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if instructor_filter %}&instructor={{ instructor_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
                     class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                     <i class="fas fa-angle-right"></i>
                 </a>
-                <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if instructor_filter %}&instructor={{ instructor_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
                     class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                     <i class="fas fa-angle-double-right"></i>
                 </a>
@@ -136,19 +243,84 @@
         <i class="fas fa-search text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
         <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">No courses found</h3>
         <p class="text-gray-600 dark:text-gray-300 mb-6">
-            {% if search_query %}
-            Try adjusting your search terms or browse all courses.
+            {% if search_query or instructor_filter or min_rating %}
+            Try adjusting your filters or search terms to find more courses.
             {% else %}
             Be the first to create a course!
             {% endif %}
         </p>
-        {% if search_query %}
-        <a href="{% url 'courses:course_list' %}"
-            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-            View All Courses
-        </a>
+        {% if search_query or instructor_filter or min_rating %}
+        <div class="space-x-4">
+            <a href="{% url 'courses:course_list' %}"
+                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-times mr-2"></i>Clear All Filters
+            </a>
+            {% if search_query %}
+            <a href="?{% if instructor_filter %}instructor={{ instructor_filter }}&{% endif %}{% if min_rating %}min_rating={{ min_rating }}&{% endif %}{% if sort_by %}sort={{ sort_by }}{% endif %}"
+                class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                <i class="fas fa-search-minus mr-2"></i>Clear Search Only
+            </a>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
     {% endif %}
 </div>
+
+<script>
+    // Set selected values and handle form interactions
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set selected values for dropdowns
+        const categorySelect = document.getElementById('category');
+        const instructorSelect = document.getElementById('instructor');
+        const ratingSelect = document.getElementById('min_rating');
+        const sortSelect = document.getElementById('sort');
+
+        // Set category filter
+        const categoryFilter = '{{ category_filter }}';
+        if (categoryFilter && categorySelect) {
+            categorySelect.value = categoryFilter;
+        }
+
+        // Set instructor filter
+        const instructorFilter = '{{ instructor_filter }}';
+        if (instructorFilter && instructorSelect) {
+            instructorSelect.value = instructorFilter;
+        }
+
+        // Set rating filter
+        const minRating = '{{ min_rating }}';
+        if (minRating && ratingSelect) {
+            ratingSelect.value = minRating;
+        }
+
+        // Set sort option
+        const sortBy = '{{ sort_by }}';
+        if (sortBy && sortSelect) {
+            sortSelect.value = sortBy;
+        }
+
+        // Auto-submit form when filter dropdowns change
+        const filterForm = document.querySelector('form');
+        const selectElements = filterForm.querySelectorAll('select');
+
+        selectElements.forEach(select => {
+            select.addEventListener('change', function () {
+                // Small delay to allow user to see the change
+                setTimeout(() => {
+                    filterForm.submit();
+                }, 100);
+            });
+        });
+
+        // Add loading state to filter button
+        const filterButton = filterForm.querySelector('button[type="submit"]');
+        if (filterButton) {
+            filterForm.addEventListener('submit', function () {
+                filterButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Applying...';
+                filterButton.disabled = true;
+            });
+        }
+    });
+</script>
 {% endblock %}
