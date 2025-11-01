@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 
-{% block title %}Add Question - {{ quiz.title }} - EduLearn{% endblock %}
+{% block title %}Add Question - {{ quiz.title }} - NeuroNest{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -57,7 +57,8 @@
                     <div>
                         <h3 class="font-semibold text-blue-900 dark:text-blue-100">Adding question to: {{ quiz.title }}
                         </h3>
-                        <p class="text-blue-800 dark:text-blue-200">{{ quiz.get_quiz_type_display }} • {{ quiz.time_limit }} minutes</p>
+                        <p class="text-blue-800 dark:text-blue-200">{{ quiz.get_quiz_type_display }} • {{
+                            quiz.time_limit }} minutes</p>
                     </div>
                 </div>
             </div>

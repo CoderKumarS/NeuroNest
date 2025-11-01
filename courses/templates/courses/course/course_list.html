@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 
-{% block title %}All Courses - EduLearn{% endblock %}
+{% block title %}All Courses - NeuroNest{% endblock %}
 
 {% block content %}
 <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
@@ -66,7 +66,8 @@
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                                 <option value="">All Categories</option>
                                 {% for category_code, category_name in category_choices %}
-                                <option value="{{ category_code }}" {% if category_filter == category_code %}selected{% endif %}>
+                                <option value="{{ category_code }}" {% if category_filter==category_code %}selected{%
+                                    endif %}>
                                     {{ category_name }}
                                 </option>
                                 {% endfor %}
@@ -83,7 +84,8 @@
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                                 <option value="">All Instructors</option>
                                 {% for instructor in instructors %}
-                                <option value="{{ instructor.username }}" {% if instructor_filter == instructor.username %}selected{% endif %}>
+                                <option value="{{ instructor.username }}" {% if instructor_filter==instructor.username
+                                    %}selected{% endif %}>
                                     {{ instructor.username }}
                                 </option>
                                 {% endfor %}
@@ -215,11 +217,11 @@
             {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
             <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ num }}</span>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if instructor_filter %}&instructor={{ instructor_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
+                href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if instructor_filter %}&instructor={{ instructor_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
                 class="px-4 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                 {{ num }}
-            </a>
+                </a>
                 {% endif %}
                 {% endfor %}
 
