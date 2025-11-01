@@ -1,0 +1,222 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Manage Quiz - {{ quiz.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'courses:course_list' %}" class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                    <i class="fas fa-home mr-2"></i>Courses
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'courses:course_detail' quiz.course.id %}"
+                        class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                        {{ quiz.course.title }}
+                    </a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="text-gray-500 dark:text-gray-400">{{ quiz.title }}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">{{ quiz.title }}</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">
+                {{ quiz.get_quiz_type_display }} • {{ quiz.time_limit }} minutes
+                {% if quiz.chapter %}
+                • Chapter: {{ quiz.chapter.title }}
+                {% elif quiz.topic %}
+                • Topic: {{ quiz.topic.title }}
+                {% endif %}
+            </p>
+        </div>
+        <div class="flex space-x-4">
+            <a href="{% url 'courses:edit_quiz' quiz.id %}"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-edit mr-2"></i>Edit Quiz
+            </a>
+            <a href="{% url 'courses:take_quiz' quiz.id %}"
+                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                <i class="fas fa-eye mr-2"></i>Preview Quiz
+            </a>
+        </div>
+    </div>
+
+    <!-- Quiz Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-question-circle text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_questions }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Questions</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-clock text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ quiz.time_limit }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Minutes</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-users text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">0</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Attempts</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-percentage text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">--</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Avg Score</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions Management -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Quiz Questions</h2>
+            <a href="{% url 'courses:add_question' quiz.id %}"
+                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Add Question
+            </a>
+        </div>
+
+        {% if questions %}
+        <div class="space-y-6">
+            {% for question in questions %}
+            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                            Question {{ forloop.counter }}: {{ question.text }}
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {% for option in question.options.all %}
+                            <div
+                                class="flex items-center p-3 rounded-lg {% if option.is_correct %}bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800{% else %}bg-gray-50 dark:bg-gray-700{% endif %}">
+                                <div
+                                    class="w-6 h-6 rounded-full flex items-center justify-center mr-3 {% if option.is_correct %}bg-green-500 text-white{% else %}bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300{% endif %}">
+                                    {% if option.is_correct %}
+                                    <i class="fas fa-check text-xs"></i>
+                                    {% else %}
+                                    {{ forloop.counter }}
+                                    {% endif %}
+                                </div>
+                                <span
+                                    class="{% if option.is_correct %}text-green-800 dark:text-green-200 font-semibold{% else %}text-gray-700 dark:text-gray-300{% endif %}">
+                                    {{ option.text }}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-2 ml-4">
+                        <a href="{% url 'courses:edit_question' question.id %}"
+                            class="text-blue-600 hover:text-blue-700 p-2" title="Edit Question">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="post" action="{% url 'courses:delete_question' question.id %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-600 hover:text-red-700 p-2" title="Delete Question"
+                                onclick="return confirm('Are you sure you want to delete this question?')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-question-circle text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">No Questions Yet</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">
+                Start building your quiz by adding questions with multiple choice options.
+            </p>
+            <a href="{% url 'courses:add_question' quiz.id %}"
+                class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Add First Question
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="{% url 'courses:add_question' quiz.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-plus text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Add Question</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Create a new quiz question</p>
+                </div>
+            </a>
+
+            <a href="{% url 'courses:take_quiz' quiz.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-eye text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Preview Quiz</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Test the quiz as a student</p>
+                </div>
+            </a>
+
+            <a href="{% url 'courses:course_detail' quiz.course.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div
+                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-arrow-left text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Back to Course</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Return to course overview</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

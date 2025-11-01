@@ -1,4 +1,4 @@
-from .models import Course, Enrollment, Quiz, Question, Option, StudentAnswer, Progress
+from .models import Course, Enrollment, Quiz, Question, Option, StudentAnswer, Progress, Chapter, Topic, TopicCompletion
 
 # HTML Views
 from django.shortcuts import render, get_object_or_404, redirect
@@ -76,19 +76,31 @@ def course_detail(request, course_id):
                 course=course
             ).first()
     
-    # Get course quizzes
-    quizzes = course.quizzes.all()
+    # Get course chapters and quizzes
+    chapters = course.chapters.all().prefetch_related('topics', 'quizzes')
+    # No more course-level quizzes - all quizzes belong to chapters or topics
+    course_quizzes = []
     
     # Get other courses by same instructor
     related_courses = Course.objects.filter(
         instructor=course.instructor
     ).exclude(id=course.id)[:3]
     
+    # Get completed topics for student
+    completed_topics = []
+    if request.user.is_authenticated and request.user.role == 'student':
+        completed_topics = TopicCompletion.objects.filter(
+            student=request.user,
+            topic__chapter__course=course
+        ).values_list('topic_id', flat=True)
+    
     context = {
         'course': course,
         'is_enrolled': is_enrolled,
         'user_progress': user_progress,
-        'quizzes': quizzes,
+        'chapters': chapters,
+        'course_quizzes': course_quizzes,
+        'completed_topics': completed_topics,
         'related_courses': related_courses,
         'is_instructor': request.user == course.instructor if request.user.is_authenticated else False
     }
@@ -175,25 +187,65 @@ def manage_course(request, course_id):
     
     # Get course statistics
     enrollments = Enrollment.objects.filter(course=course)
-    quizzes = course.quizzes.all()
+    quizzes = course.get_all_quizzes()  # Get all quizzes from chapters and topics
+    chapters = course.chapters.all().prefetch_related('topics', 'quizzes')
     
     context = {
         'course': course,
         'enrollments': enrollments,
         'quizzes': quizzes,
+        'chapters': chapters,
         'total_students': enrollments.count(),
-        'total_quizzes': quizzes.count()
+        'total_quizzes': quizzes.count(),
+        'total_chapters': chapters.count()
     }
     return render(request, 'courses/manage_course.html', context)
 
 @login_required
 def create_quiz(request, course_id):
-    """Create a quiz for a course"""
+    """Create a quiz for a course chapter"""
     course = get_object_or_404(Course, id=course_id)
     
     if request.user != course.instructor:
         messages.error(request, 'You can only create quizzes for your own courses.')
         return redirect('courses:course_detail', course_id=course.id)
+    
+    # Get course chapters for selection
+    chapters = course.chapters.all()
+    
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        time_limit = request.POST.get('time_limit', 15)
+        chapter_id = request.POST.get('chapter_id')
+        quiz_type = request.POST.get('quiz_type', 'chapter')
+        
+        if title and chapter_id:
+            chapter = get_object_or_404(Chapter, id=chapter_id, course=course)
+            quiz = Quiz.objects.create(
+                chapter=chapter,
+                title=title,
+                quiz_type=quiz_type,
+                time_limit=int(time_limit)
+            )
+            messages.success(request, f'Quiz "{quiz.title}" created successfully for {chapter.title}!')
+            return redirect('courses:manage_quiz', quiz_id=quiz.id)
+        else:
+            messages.error(request, 'Please provide a quiz title and select a chapter.')
+    
+    context = {
+        'course': course,
+        'chapters': chapters
+    }
+    return render(request, 'courses/create_quiz.html', context)
+
+@login_required
+def create_topic_quiz(request, topic_id):
+    """Create a quiz for a specific topic"""
+    topic = get_object_or_404(Topic, id=topic_id)
+    
+    if request.user != topic.chapter.course.instructor:
+        messages.error(request, 'You can only create quizzes for your own courses.')
+        return redirect('courses:topic_detail', topic_id=topic.id)
     
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -201,17 +253,160 @@ def create_quiz(request, course_id):
         
         if title:
             quiz = Quiz.objects.create(
-                course=course,
+                topic=topic,
                 title=title,
+                quiz_type='topic',
                 time_limit=int(time_limit)
             )
-            messages.success(request, f'Quiz "{quiz.title}" created successfully!')
-            return redirect('courses:manage_course', course_id=course.id)
+            messages.success(request, f'Quiz "{quiz.title}" created successfully for topic "{topic.title}"!')
+            return redirect('courses:manage_quiz', quiz_id=quiz.id)
         else:
             messages.error(request, 'Please provide a quiz title.')
     
-    context = {'course': course}
-    return render(request, 'courses/create_quiz.html', context)
+    context = {'topic': topic}
+    return render(request, 'courses/create_topic_quiz.html', context)
+
+@login_required
+def edit_quiz(request, quiz_id):
+    """Edit quiz details"""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    
+    # Check permissions
+    if request.user != quiz.course.instructor:
+        messages.error(request, 'You can only edit your own quizzes.')
+        return redirect('courses:course_detail', course_id=quiz.course.id)
+    
+    if request.method == 'POST':
+        quiz.title = request.POST.get('title', quiz.title)
+        quiz.time_limit = int(request.POST.get('time_limit', quiz.time_limit))
+        quiz.save()
+        
+        messages.success(request, f'Quiz "{quiz.title}" updated successfully!')
+        return redirect('courses:manage_quiz', quiz_id=quiz.id)
+    
+    context = {'quiz': quiz}
+    return render(request, 'courses/edit_quiz.html', context)
+
+@login_required
+def manage_quiz(request, quiz_id):
+    """Manage quiz questions and options"""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    
+    # Check permissions
+    if request.user != quiz.course.instructor:
+        messages.error(request, 'You can only manage your own quizzes.')
+        return redirect('courses:course_detail', course_id=quiz.course.id)
+    
+    questions = quiz.questions.all().prefetch_related('options')
+    
+    context = {
+        'quiz': quiz,
+        'questions': questions,
+        'total_questions': questions.count()
+    }
+    return render(request, 'courses/manage_quiz.html', context)
+
+@login_required
+def add_question(request, quiz_id):
+    """Add a question to a quiz"""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    
+    # Check permissions
+    if request.user != quiz.course.instructor:
+        messages.error(request, 'You can only add questions to your own quizzes.')
+        return redirect('courses:course_detail', course_id=quiz.course.id)
+    
+    if request.method == 'POST':
+        question_text = request.POST.get('question_text')
+        options = [
+            request.POST.get('option_1', ''),
+            request.POST.get('option_2', ''),
+            request.POST.get('option_3', ''),
+            request.POST.get('option_4', '')
+        ]
+        correct_option = int(request.POST.get('correct_option', 1)) - 1
+        
+        if question_text and all(options):
+            # Create the question
+            question = Question.objects.create(
+                quiz=quiz,
+                text=question_text
+            )
+            
+            # Create the options
+            for i, option_text in enumerate(options):
+                Option.objects.create(
+                    question=question,
+                    text=option_text,
+                    is_correct=(i == correct_option)
+                )
+            
+            messages.success(request, 'Question added successfully!')
+            return redirect('courses:manage_quiz', quiz_id=quiz.id)
+        else:
+            messages.error(request, 'Please fill in all fields.')
+    
+    context = {'quiz': quiz}
+    return render(request, 'courses/add_question.html', context)
+
+@login_required
+def edit_question(request, question_id):
+    """Edit a quiz question"""
+    question = get_object_or_404(Question, id=question_id)
+    quiz = question.quiz
+    
+    # Check permissions
+    if request.user != quiz.course.instructor:
+        messages.error(request, 'You can only edit your own quiz questions.')
+        return redirect('courses:course_detail', course_id=quiz.course.id)
+    
+    if request.method == 'POST':
+        question.text = request.POST.get('question_text', question.text)
+        question.save()
+        
+        # Update options
+        options = question.options.all()
+        option_texts = [
+            request.POST.get('option_1', ''),
+            request.POST.get('option_2', ''),
+            request.POST.get('option_3', ''),
+            request.POST.get('option_4', '')
+        ]
+        correct_option = int(request.POST.get('correct_option', 1)) - 1
+        
+        for i, option in enumerate(options):
+            if i < len(option_texts):
+                option.text = option_texts[i]
+                option.is_correct = (i == correct_option)
+                option.save()
+        
+        messages.success(request, 'Question updated successfully!')
+        return redirect('courses:manage_quiz', quiz_id=quiz.id)
+    
+    options = list(question.options.all())
+    context = {
+        'question': question,
+        'quiz': quiz,
+        'options': options
+    }
+    return render(request, 'courses/edit_question.html', context)
+
+@login_required
+def delete_question(request, question_id):
+    """Delete a quiz question"""
+    question = get_object_or_404(Question, id=question_id)
+    quiz = question.quiz
+    
+    # Check permissions
+    if request.user != quiz.course.instructor:
+        messages.error(request, 'You can only delete your own quiz questions.')
+        return redirect('courses:course_detail', course_id=quiz.course.id)
+    
+    if request.method == 'POST':
+        question.delete()
+        messages.success(request, 'Question deleted successfully!')
+    
+    return redirect('courses:manage_quiz', quiz_id=quiz.id)
 
 @login_required
 def take_quiz(request, quiz_id):
@@ -358,16 +553,17 @@ def course_progress(request, course_id):
     ).first()
     
     # Get completed quizzes
+    from django.db.models import Q
     completed_quizzes = StudentAnswer.objects.filter(
         student=request.user,
-        question__quiz__course=course
+        question__quiz__in=course.get_all_quizzes()
     ).values('question__quiz').distinct()
     
     context = {
         'course': course,
         'progress': progress,
         'completed_quizzes_count': completed_quizzes.count(),
-        'total_quizzes': course.quizzes.count()
+        'total_quizzes': course.get_total_quizzes()
     }
     return render(request, 'courses/course_progress.html', context)
 # Debug view to test Django template rendering
@@ -407,3 +603,271 @@ def test_template_rendering(request):
     })
     
     return HttpResponse(template.render(context))
+# Chapter Management Views
+
+@login_required
+def manage_chapters(request, course_id):
+    """Manage chapters for a course"""
+    course = get_object_or_404(Course, id=course_id)
+    
+    if request.user != course.instructor:
+        messages.error(request, 'You can only manage chapters for your own courses.')
+        return redirect('courses:course_detail', course_id=course.id)
+    
+    chapters = course.chapters.all().prefetch_related('topics', 'quizzes')
+    
+    context = {
+        'course': course,
+        'chapters': chapters,
+    }
+    return render(request, 'courses/manage_chapters.html', context)
+
+
+@login_required
+def create_chapter(request, course_id):
+    """Create a new chapter"""
+    course = get_object_or_404(Course, id=course_id)
+    
+    if request.user != course.instructor:
+        messages.error(request, 'You can only create chapters for your own courses.')
+        return redirect('courses:course_detail', course_id=course.id)
+    
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description', '')
+        order = request.POST.get('order', 0)
+        
+        if title:
+            chapter = Chapter.objects.create(
+                course=course,
+                title=title,
+                description=description,
+                order=int(order) if order else course.chapters.count() + 1
+            )
+            messages.success(request, f'Chapter "{chapter.title}" created successfully!')
+            return redirect('courses:manage_chapters', course_id=course.id)
+        else:
+            messages.error(request, 'Please provide a chapter title.')
+    
+    context = {
+        'course': course,
+        'next_order': course.chapters.count() + 1
+    }
+    return render(request, 'courses/create_chapter.html', context)
+
+
+@login_required
+def edit_chapter(request, chapter_id):
+    """Edit chapter details"""
+    chapter = get_object_or_404(Chapter, id=chapter_id)
+    
+    if request.user != chapter.course.instructor:
+        messages.error(request, 'You can only edit chapters for your own courses.')
+        return redirect('courses:course_detail', course_id=chapter.course.id)
+    
+    if request.method == 'POST':
+        chapter.title = request.POST.get('title', chapter.title)
+        chapter.description = request.POST.get('description', chapter.description)
+        chapter.order = int(request.POST.get('order', chapter.order))
+        chapter.save()
+        
+        messages.success(request, 'Chapter updated successfully!')
+        return redirect('courses:manage_chapters', course_id=chapter.course.id)
+    
+    context = {'chapter': chapter}
+    return render(request, 'courses/edit_chapter.html', context)
+
+
+def chapter_detail(request, chapter_id):
+    """Display chapter details with topics"""
+    chapter = get_object_or_404(Chapter, id=chapter_id)
+    
+    # Check if user is enrolled or is the instructor
+    is_enrolled = False
+    is_instructor = request.user == chapter.course.instructor if request.user.is_authenticated else False
+    
+    if request.user.is_authenticated and request.user.role == 'student':
+        is_enrolled = Enrollment.objects.filter(
+            student=request.user, 
+            course=chapter.course
+        ).exists()
+    
+    if not is_enrolled and not is_instructor:
+        messages.error(request, 'You must be enrolled in this course to view chapters.')
+        return redirect('courses:course_detail', course_id=chapter.course.id)
+    
+    topics = chapter.topics.all()
+    
+    # Get completed topics for student
+    completed_topics = []
+    if request.user.is_authenticated and request.user.role == 'student':
+        completed_topics = TopicCompletion.objects.filter(
+            student=request.user,
+            topic__in=topics
+        ).values_list('topic_id', flat=True)
+    
+    context = {
+        'chapter': chapter,
+        'topics': topics,
+        'completed_topics': completed_topics,
+        'is_instructor': is_instructor,
+        'is_enrolled': is_enrolled,
+    }
+    return render(request, 'courses/chapter_detail.html', context)
+
+
+# Topic Management Views
+
+@login_required
+def create_topic(request, chapter_id):
+    """Create a new topic"""
+    chapter = get_object_or_404(Chapter, id=chapter_id)
+    
+    if request.user != chapter.course.instructor:
+        messages.error(request, 'You can only create topics for your own courses.')
+        return redirect('courses:chapter_detail', chapter_id=chapter.id)
+    
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description', '')
+        order = request.POST.get('order', 0)
+        youtube_video_url = request.POST.get('youtube_video_url', '')
+        notes = request.POST.get('notes', '')
+        extra_info = request.POST.get('extra_info', '')
+        
+        # Validate that at least one content field is provided
+        if not any([youtube_video_url, notes, extra_info]):
+            messages.error(request, 'Please provide at least one of: YouTube video, notes, or extra info.')
+        elif title:
+            topic = Topic.objects.create(
+                chapter=chapter,
+                title=title,
+                description=description,
+                order=int(order) if order else chapter.topics.count() + 1,
+                youtube_video_url=youtube_video_url,
+                notes=notes,
+                extra_info=extra_info
+            )
+            messages.success(request, f'Topic "{topic.title}" created successfully!')
+            return redirect('courses:chapter_detail', chapter_id=chapter.id)
+        else:
+            messages.error(request, 'Please provide a topic title.')
+    
+    context = {
+        'chapter': chapter,
+        'next_order': chapter.topics.count() + 1
+    }
+    return render(request, 'courses/create_topic.html', context)
+
+
+@login_required
+def edit_topic(request, topic_id):
+    """Edit topic details"""
+    topic = get_object_or_404(Topic, id=topic_id)
+    
+    if request.user != topic.chapter.course.instructor:
+        messages.error(request, 'You can only edit topics for your own courses.')
+        return redirect('courses:topic_detail', topic_id=topic.id)
+    
+    if request.method == 'POST':
+        topic.title = request.POST.get('title', topic.title)
+        topic.description = request.POST.get('description', topic.description)
+        topic.order = int(request.POST.get('order', topic.order))
+        topic.youtube_video_url = request.POST.get('youtube_video_url', topic.youtube_video_url)
+        topic.notes = request.POST.get('notes', topic.notes)
+        topic.extra_info = request.POST.get('extra_info', topic.extra_info)
+        
+        # Validate that at least one content field is provided
+        if not any([topic.youtube_video_url, topic.notes, topic.extra_info]):
+            messages.error(request, 'Please provide at least one of: YouTube video, notes, or extra info.')
+        else:
+            topic.save()
+            messages.success(request, 'Topic updated successfully!')
+            return redirect('courses:topic_detail', topic_id=topic.id)
+    
+    context = {'topic': topic}
+    return render(request, 'courses/edit_topic.html', context)
+
+
+def topic_detail(request, topic_id):
+    """Display topic details with content"""
+    topic = get_object_or_404(Topic, id=topic_id)
+    
+    # Check if user is enrolled or is the instructor
+    is_enrolled = False
+    is_instructor = request.user == topic.chapter.course.instructor if request.user.is_authenticated else False
+    
+    if request.user.is_authenticated and request.user.role == 'student':
+        is_enrolled = Enrollment.objects.filter(
+            student=request.user, 
+            course=topic.chapter.course
+        ).exists()
+    
+    if not is_enrolled and not is_instructor:
+        messages.error(request, 'You must be enrolled in this course to view topics.')
+        return redirect('courses:course_detail', course_id=topic.chapter.course.id)
+    
+    # Check if topic is completed by student
+    is_completed = False
+    if request.user.is_authenticated and request.user.role == 'student':
+        is_completed = TopicCompletion.objects.filter(
+            student=request.user,
+            topic=topic
+        ).exists()
+    
+    # Get topic quizzes
+    topic_quizzes = topic.quizzes.all()
+    
+    context = {
+        'topic': topic,
+        'is_instructor': is_instructor,
+        'is_enrolled': is_enrolled,
+        'is_completed': is_completed,
+        'topic_quizzes': topic_quizzes,
+        'youtube_embed_url': topic.get_youtube_embed_url(),
+    }
+    return render(request, 'courses/topic_detail.html', context)
+
+
+@login_required
+def complete_topic(request, topic_id):
+    """Mark topic as completed for student"""
+    if request.user.role != 'student':
+        messages.error(request, 'Only students can complete topics.')
+        return redirect('courses:topic_detail', topic_id=topic_id)
+    
+    topic = get_object_or_404(Topic, id=topic_id)
+    
+    # Check if student is enrolled
+    if not Enrollment.objects.filter(student=request.user, course=topic.chapter.course).exists():
+        messages.error(request, 'You must be enrolled in this course.')
+        return redirect('courses:course_detail', course_id=topic.chapter.course.id)
+    
+    # Mark as completed
+    completion, created = TopicCompletion.objects.get_or_create(
+        student=request.user,
+        topic=topic
+    )
+    
+    if created:
+        messages.success(request, f'Topic "{topic.title}" marked as completed!')
+        
+        # Update course progress
+        total_topics = Topic.objects.filter(chapter__course=topic.chapter.course).count()
+        completed_topics = TopicCompletion.objects.filter(
+            student=request.user,
+            topic__chapter__course=topic.chapter.course
+        ).count()
+        
+        progress, _ = Progress.objects.get_or_create(
+            student=request.user,
+            course=topic.chapter.course,
+            defaults={'total_lessons': total_topics}
+        )
+        progress.completed_lessons = completed_topics
+        progress.total_lessons = total_topics
+        progress.save()
+    else:
+        messages.info(request, 'Topic already completed.')
+    
+    return redirect('courses:topic_detail', topic_id=topic.id)

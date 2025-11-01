@@ -122,7 +122,7 @@ def dashboard_view(request):
         
         # Get recent quiz attempts
         recent_answers = StudentAnswer.objects.filter(student=user).select_related(
-            'question__quiz__course'
+            'question__quiz__chapter__course', 'question__quiz__topic__chapter__course'
         ).order_by('-submitted_at')[:5]
         
         # Calculate certificates (courses with score >= 80%)
@@ -134,10 +134,12 @@ def dashboard_view(request):
         # Recent activity
         recent_activity = []
         for answer in recent_answers:
+            quiz = answer.question.quiz
+            course = quiz.course  # Use the property method
             recent_activity.append({
                 'type': 'quiz_completed',
-                'course': answer.question.quiz.course.title,
-                'quiz': answer.question.quiz.title,
+                'course': course.title if course else 'Unknown Course',
+                'quiz': quiz.title,
                 'date': answer.submitted_at,
                 'score': None  # We'd need to calculate this
             })
@@ -163,7 +165,7 @@ def dashboard_view(request):
         total_students = Enrollment.objects.filter(course__instructor=user).count()
         
         # Get total quizzes (lessons)
-        total_lessons = sum(course.quizzes.count() for course in instructor_courses)
+        total_lessons = sum(course.get_total_quizzes() for course in instructor_courses)
         
         # Recent activity for instructors
         recent_enrollments = Enrollment.objects.filter(
@@ -316,7 +318,11 @@ def profile_view(request):
         
         instructor_courses = Course.objects.filter(instructor=user)
         total_students = Enrollment.objects.filter(course__instructor=user).count()
-        total_quizzes = Quiz.objects.filter(course__instructor=user).count()
+        # Get total quizzes across all instructor's courses using the new hierarchical structure
+        from django.db.models import Q
+        total_quizzes = Quiz.objects.filter(
+            Q(chapter__course__instructor=user) | Q(topic__chapter__course__instructor=user)
+        ).count()
         
         context.update({
             'total_courses': instructor_courses.count(),

@@ -51,42 +51,99 @@
 
             <!-- Course Content -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Course Content</h2>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Course Content</h2>
+                    {% if is_instructor %}
+                    <a href="{% url 'courses:manage_chapters' course.id %}"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-cog mr-2"></i>Manage Chapters
+                    </a>
+                    {% endif %}
+                </div>
 
-                {% if quizzes %}
-                <div class="space-y-4">
-                    {% for quiz in quizzes %}
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ quiz.title }}</h3>
-                                <p class="text-gray-600 dark:text-gray-300">
-                                    <i class="fas fa-clock mr-1"></i>{{ quiz.time_limit }} minutes
-                                    <span class="ml-4">
-                                        <i class="fas fa-question-circle mr-1"></i>{{ quiz.questions.count }} question{{ quiz.questions.count|pluralize }}
+                {% if chapters %}
+                <div class="space-y-6">
+                    {% for chapter in chapters %}
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                        <!-- Chapter Header -->
+                        <div
+                            class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        Chapter {{ chapter.order }}: {{ chapter.title }}
+                                    </h3>
+                                    {% if chapter.description %}
+                                    <p class="text-gray-600 dark:text-gray-300 mt-1">{{ chapter.description }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ chapter.topics.count }} topic{{ chapter.topics.count|pluralize }}
                                     </span>
-                                </p>
+                                    {% if is_enrolled or is_instructor %}
+                                    <a href="{% url 'courses:chapter_detail' chapter.id %}"
+                                        class="text-blue-600 hover:text-blue-700 font-medium">
+                                        View Chapter
+                                    </a>
+                                    {% endif %}
+                                </div>
                             </div>
-                            {% if is_enrolled %}
-                            <a href="{% url 'courses:take_quiz' quiz.id %}"
-                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                                Take Quiz
-                            </a>
-                            {% else %}
-                            <span class="text-gray-400 dark:text-gray-500">Enroll to access</span>
+                        </div>
+
+                        <!-- Topics Preview -->
+                        {% if chapter.topics.all %}
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {% for topic in chapter.topics.all|slice:":4" %}
+                                <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3
+                                        {% if topic.id in completed_topics %}bg-green-100 dark:bg-green-900
+                                        {% else %}bg-blue-100 dark:bg-blue-900{% endif %}">
+                                        {% if topic.id in completed_topics %}
+                                        <i class="fas fa-check text-green-600 dark:text-green-400 text-sm"></i>
+                                        {% else %}
+                                        <i class="fas fa-play text-blue-600 dark:text-blue-400 text-sm"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-gray-900 dark:text-white text-sm">{{ topic.title }}
+                                        </h4>
+                                        <div
+                                            class="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+                                            {% if topic.youtube_video_url %}
+                                            <span><i class="fas fa-video mr-1"></i>Video</span>
+                                            {% endif %}
+                                            {% if topic.notes %}
+                                            <span><i class="fas fa-file-text mr-1"></i>Notes</span>
+                                            {% endif %}
+                                            {% if topic.quizzes.count %}
+                                            <span><i class="fas fa-question-circle mr-1"></i>Quiz</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if chapter.topics.count > 4 %}
+                            <p class="text-center text-gray-500 dark:text-gray-400 mt-4">
+                                And {{ chapter.topics.count|add:"-4" }} more topic{{
+                                chapter.topics.count|add:"-4"|pluralize }}...
+                            </p>
                             {% endif %}
                         </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
                 <div class="text-center py-8">
                     <i class="fas fa-book-open text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
-                    <p class="text-gray-600 dark:text-gray-300">No content available yet.</p>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">No chapters available yet.</p>
                     {% if is_instructor %}
-                    <a href="{% url 'courses:create_quiz' course.id %}"
-                        class="inline-block mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                        Add Quiz
+                    <a href="{% url 'courses:create_chapter' course.id %}"
+                        class="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Create First Chapter
                     </a>
                     {% endif %}
                 </div>
@@ -217,11 +274,11 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600 dark:text-gray-300">Students Enrolled</span>
-                        <span class="font-semibold text-gray-900 dark:text-white">{{ course.enrollment.count }}</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ course.enrollment.count|default:0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600 dark:text-gray-300">Quizzes</span>
-                        <span class="font-semibold text-gray-900 dark:text-white">{{ quizzes.count }}</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ quizzes.count|default:0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600 dark:text-gray-300">Created</span>

@@ -1,0 +1,154 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Create Topic - {{ chapter.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'courses:course_list' %}" class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                    <i class="fas fa-home mr-2"></i>Courses
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'courses:course_detail' chapter.course.id %}"
+                        class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                        {{ chapter.course.title }}
+                    </a>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'courses:chapter_detail' chapter.id %}"
+                        class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                        {{ chapter.title }}
+                    </a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="text-gray-500 dark:text-gray-400">Create Topic</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create New Topic</h1>
+        <p class="text-gray-600 dark:text-gray-300">Add a new topic to {{ chapter.title }}</p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Topic Title *
+                </label>
+                <input type="text" id="title" name="title" required
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    placeholder="Enter topic title">
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                </label>
+                <textarea id="description" name="description" rows="3"
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    placeholder="Brief description of the topic..."></textarea>
+            </div>
+
+            <!-- Order -->
+            <div>
+                <label for="order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Topic Order
+                </label>
+                <input type="number" id="order" name="order" value="{{ next_order }}" min="1"
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+            </div>
+
+            <!-- Content Section -->
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Topic Content</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                    Provide at least one type of content for this topic
+                </p>
+
+                <!-- YouTube Video URL -->
+                <div class="mb-6">
+                    <label for="youtube_video_url"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fab fa-youtube text-red-600 mr-2"></i>YouTube Video URL
+                    </label>
+                    <input type="url" id="youtube_video_url" name="youtube_video_url"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="https://www.youtube.com/watch?v=...">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Paste a YouTube video URL to embed it in this topic
+                    </p>
+                </div>
+
+                <!-- Notes -->
+                <div class="mb-6">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-file-text text-blue-600 mr-2"></i>Notes & Content
+                    </label>
+                    <textarea id="notes" name="notes" rows="8"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Write your lesson content, notes, explanations..."></textarea>
+                </div>
+
+                <!-- Extra Information -->
+                <div>
+                    <label for="extra_info" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-info-circle text-purple-600 mr-2"></i>Additional Information
+                    </label>
+                    <textarea id="extra_info" name="extra_info" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Additional resources, links, or supplementary information..."></textarea>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-between pt-6">
+                <a href="{% url 'courses:chapter_detail' chapter.id %}"
+                    class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Cancel
+                </a>
+
+                <button type="submit"
+                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Create Topic
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Form validation to ensure at least one content field is filled
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const youtubeUrl = document.getElementById('youtube_video_url').value.trim();
+        const notes = document.getElementById('notes').value.trim();
+        const extraInfo = document.getElementById('extra_info').value.trim();
+
+        if (!youtubeUrl && !notes && !extraInfo) {
+            e.preventDefault();
+            alert('Please provide at least one type of content: YouTube video, notes, or additional information.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

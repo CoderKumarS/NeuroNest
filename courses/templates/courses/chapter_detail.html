@@ -1,0 +1,138 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ chapter.title }} - {{ chapter.course.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'courses:course_list' %}" class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                    <i class="fas fa-home mr-2"></i>Courses
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'courses:course_detail' chapter.course.id %}"
+                        class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                        {{ chapter.course.title }}
+                    </a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="text-gray-500 dark:text-gray-400">{{ chapter.title }}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Chapter Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{{ chapter.title }}</h1>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">{{ chapter.description }}</p>
+                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-book mr-2"></i>
+                    <span>{{ topics.count }} topic{{ topics.count|pluralize }}</span>
+                </div>
+            </div>
+
+            {% if is_instructor %}
+            <div class="flex space-x-2">
+                <a href="{% url 'courses:create_topic' chapter.id %}"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Topic
+                </a>
+                <a href="{% url 'courses:edit_chapter' chapter.id %}"
+                    class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-edit mr-2"></i>Edit
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Topics List -->
+    <div class="space-y-6">
+        {% for topic in topics %}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <!-- Completion Status -->
+                        {% if topic.id in completed_topics %}
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white"></i>
+                        </div>
+                        {% else %}
+                        <div class="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                            <span class="text-gray-600 dark:text-gray-300 font-semibold">{{ topic.order }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ topic.title }}</h3>
+                            <p class="text-gray-600 dark:text-gray-300">{{ topic.description|truncatewords:20 }}</p>
+
+                            <!-- Content indicators -->
+                            <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                {% if topic.youtube_video_url %}
+                                <span><i class="fas fa-play-circle mr-1"></i>Video</span>
+                                {% endif %}
+                                {% if topic.notes %}
+                                <span><i class="fas fa-file-text mr-1"></i>Notes</span>
+                                {% endif %}
+                                {% if topic.quizzes.exists %}
+                                <span><i class="fas fa-question-circle mr-1"></i>Quiz</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        {% if is_instructor %}
+                        <a href="{% url 'courses:edit_topic' topic.id %}"
+                            class="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% endif %}
+
+                        <a href="{% url 'courses:topic_detail' topic.id %}"
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            {% if topic.id in completed_topics %}
+                            Review
+                            {% else %}
+                            Start
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-12">
+            <i class="fas fa-book-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No Topics Yet</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">
+                {% if is_instructor %}
+                Start building your chapter by adding topics.
+                {% else %}
+                This chapter doesn't have any topics yet.
+                {% endif %}
+            </p>
+            {% if is_instructor %}
+            <a href="{% url 'courses:create_topic' chapter.id %}"
+                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Add First Topic
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

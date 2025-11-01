@@ -1,0 +1,130 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Edit Quiz - {{ quiz.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'courses:course_list' %}" class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                    <i class="fas fa-home mr-2"></i>Courses
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'courses:course_detail' quiz.course.id %}"
+                        class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                        {{ quiz.course.title }}
+                    </a>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'courses:manage_quiz' quiz.id %}"
+                        class="text-gray-700 hover:text-blue-600 dark:text-gray-300">
+                        {{ quiz.title }}
+                    </a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="text-gray-500 dark:text-gray-400">Edit</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Edit Quiz</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">Update quiz details</p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Quiz Info -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div class="flex items-center">
+                    <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 mr-3"></i>
+                    <div>
+                        <h3 class="font-semibold text-blue-900 dark:text-blue-100">Quiz Type: {{ quiz.get_quiz_type_display }}</h3>
+                        <p class="text-blue-800 dark:text-blue-200">
+                            {% if quiz.chapter %}
+                            Chapter: {{ quiz.chapter.title }}
+                            {% elif quiz.topic %}
+                            Topic: {{ quiz.topic.title }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Title -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Quiz Title *
+                </label>
+                <input type="text" id="title" name="title" value="{{ quiz.title }}" required
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+            </div>
+
+            <!-- Time Limit -->
+            <div>
+                <label for="time_limit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Time Limit (minutes)
+                </label>
+                <select id="time_limit" name="time_limit"
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <option value="5">5 minutes</option>
+                    <option value="10">10 minutes</option>
+                    <option value="15">15 minutes</option>
+                    <option value="20">20 minutes</option>
+                    <option value="30">30 minutes</option>
+                    <option value="45">45 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="90">1.5 hours</option>
+                    <option value="120">2 hours</option>
+                </select>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-between pt-6">
+                <a href="{% url 'courses:manage_quiz' quiz.id %}"
+                    class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Cancel
+                </a>
+
+                <button type="submit"
+                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Set the selected time limit option
+    document.addEventListener('DOMContentLoaded', function () {
+        const timeLimitSelect = document.getElementById('time_limit');
+        const currentTimeLimit = {{ quiz.time_limit }
+    };
+
+    // Set the selected option
+    for (let option of timeLimitSelect.options) {
+        if (parseInt(option.value) === currentTimeLimit) {
+            option.selected = true;
+            break;
+        }
+    }
+    });
+</script>
+{% endblock %}

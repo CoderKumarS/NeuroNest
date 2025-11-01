@@ -24,6 +24,23 @@
             <form method="post" class="space-y-6">
                 {% csrf_token %}
 
+                <!-- Chapter Selection -->
+                <div>
+                    <label for="chapter_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Select Chapter *
+                    </label>
+                    <select id="chapter_id" name="chapter_id" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <option value="">Choose a chapter...</option>
+                        {% for chapter in chapters %}
+                        <option value="{{ chapter.id }}">Chapter {{ chapter.order }}: {{ chapter.title }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Select which chapter this quiz belongs to
+                    </p>
+                </div>
+
                 <!-- Quiz Title -->
                 <div>
                     <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

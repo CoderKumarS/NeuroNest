@@ -23,7 +23,7 @@
     </div>
 
     <!-- Course Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <div class="flex items-center">
                 <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
@@ -32,6 +32,18 @@
                 <div class="ml-4">
                     <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_students }}</h3>
                     <p class="text-gray-600 dark:text-gray-300">Students</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-book text-indigo-600 dark:text-indigo-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_chapters }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Chapters</p>
                 </div>
             </div>
         </div>
@@ -73,6 +85,76 @@
         </div>
     </div>
 
+    <!-- Chapter Management Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Course Structure</h2>
+            <div class="flex space-x-3">
+                <a href="{% url 'courses:manage_chapters' course.id %}"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-cog mr-2"></i>Manage Chapters
+                </a>
+                <a href="{% url 'courses:create_chapter' course.id %}"
+                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Chapter
+                </a>
+            </div>
+        </div>
+
+        {% if chapters %}
+        <div class="space-y-4">
+            {% for chapter in chapters %}
+            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3">
+                            <span
+                                class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-sm font-semibold text-blue-600 dark:text-blue-400">
+                                {{ chapter.order }}
+                            </span>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ chapter.title }}</h3>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">{{ chapter.description|truncatewords:15 }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                            <span><i class="fas fa-book mr-1"></i>{{ chapter.topics.count }} topic{{ chapter.topics.count|pluralize }}</span>
+                            <span><i class="fas fa-question-circle mr-1"></i>{{ chapter.quizzes.count }} quiz{{ chapter.quizzes.count|pluralize }}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <a href="{% url 'courses:chapter_detail' chapter.id %}"
+                            class="text-blue-600 hover:text-blue-700 p-2" title="View Chapter">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'courses:edit_chapter' chapter.id %}"
+                            class="text-gray-600 hover:text-gray-700 p-2" title="Edit Chapter">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'courses:create_topic' chapter.id %}"
+                            class="text-green-600 hover:text-green-700 p-2" title="Add Topic">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-book-open text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">No chapters created yet</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                Organize your course content by creating chapters and topics
+            </p>
+            <a href="{% url 'courses:create_chapter' course.id %}"
+                class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                Create Your First Chapter
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Quizzes Management -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
@@ -99,13 +181,18 @@
                             </p>
                         </div>
                         <div class="flex space-x-2">
+                            <a href="{% url 'courses:manage_quiz' quiz.id %}"
+                                class="text-green-600 hover:text-green-700 p-2" title="Manage Quiz">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                            <a href="{% url 'courses:edit_quiz' quiz.id %}"
+                                class="text-blue-600 hover:text-blue-700 p-2" title="Edit Quiz">
+                                <i class="fas fa-edit"></i>
+                            </a>
                             <a href="{% url 'courses:take_quiz' quiz.id %}"
-                                class="text-blue-600 hover:text-blue-700 p-2" title="Preview Quiz">
+                                class="text-purple-600 hover:text-purple-700 p-2" title="Preview Quiz">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <button class="text-red-600 hover:text-red-700 p-2" title="Delete Quiz">
-                                <i class="fas fa-trash"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -177,7 +264,19 @@
     <!-- Quick Actions -->
     <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <a href="{% url 'courses:create_chapter' course.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div
+                    class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-book text-indigo-600 dark:text-indigo-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Add Chapter</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Organize course content</p>
+                </div>
+            </a>
+
             <a href="{% url 'courses:create_quiz' course.id %}"
                 class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
                 <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
@@ -200,16 +299,17 @@
                 </div>
             </a>
 
-            <div class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <a href="{% url 'courses:manage_chapters' course.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
                 <div
                     class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
-                    <i class="fas fa-share text-purple-600 dark:text-purple-400 text-xl"></i>
+                    <i class="fas fa-cog text-purple-600 dark:text-purple-400 text-xl"></i>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-gray-900 dark:text-white">Share Course</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">Promote to get more students</p>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Manage Chapters</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Advanced chapter management</p>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 </div>
