@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.db import models
 from .models import CustomUser
 import json
 
@@ -275,3 +276,112 @@ def ajax_login(request):
         return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
+
+@login_required
+def profile_view(request):
+    """Display user profile"""
+    user = request.user
+    
+    # Get user statistics based on role
+    context = {
+        'user': user,
+        'is_student': user.role == 'student',
+        'is_instructor': user.role == 'instructor',
+    }
+    
+    if user.role == 'student':
+        # Import here to avoid circular imports
+        from courses.models import Enrollment, Progress, StudentAnswer
+        
+        enrollments = Enrollment.objects.filter(student=user)
+        progress_records = Progress.objects.filter(student=user)
+        quiz_attempts = StudentAnswer.objects.filter(student=user).count()
+        
+        # Calculate statistics
+        total_courses = enrollments.count()
+        completed_courses = progress_records.filter(score__gte=80).count()
+        avg_score = progress_records.aggregate(avg_score=models.Avg('score'))['avg_score'] or 0
+        
+        context.update({
+            'total_courses': total_courses,
+            'completed_courses': completed_courses,
+            'quiz_attempts': quiz_attempts,
+            'avg_score': round(avg_score, 1),
+            'recent_enrollments': enrollments.order_by('-enrolled_at')[:5],
+        })
+        
+    elif user.role == 'instructor':
+        # Import here to avoid circular imports
+        from courses.models import Course, Enrollment, Quiz
+        
+        instructor_courses = Course.objects.filter(instructor=user)
+        total_students = Enrollment.objects.filter(course__instructor=user).count()
+        total_quizzes = Quiz.objects.filter(course__instructor=user).count()
+        
+        context.update({
+            'total_courses': instructor_courses.count(),
+            'total_students': total_students,
+            'total_quizzes': total_quizzes,
+            'recent_courses': instructor_courses.order_by('-created_at')[:5],
+        })
+    
+    return render(request, 'users/profile.html', context)
+
+
+@login_required
+def edit_profile(request):
+    """Edit user profile"""
+    user = request.user
+    
+    if request.method == 'POST':
+        # Update basic profile information
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        
+        # Validation
+        if not email:
+            messages.error(request, 'Email is required.')
+        elif CustomUser.objects.filter(email=email).exclude(id=user.id).exists():
+            messages.error(request, 'This email is already in use.')
+        else:
+            # Update user information
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            user.save()
+            
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('users:profile')
+    
+    return render(request, 'users/edit_profile.html', {'user': user})
+
+
+@login_required
+def change_password(request):
+    """Change user password"""
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        # Validation
+        if not request.user.check_password(current_password):
+            messages.error(request, 'Current password is incorrect.')
+        elif len(new_password) < 8:
+            messages.error(request, 'New password must be at least 8 characters long.')
+        elif new_password != confirm_password:
+            messages.error(request, 'New passwords do not match.')
+        else:
+            # Update password
+            request.user.set_password(new_password)
+            request.user.save()
+            
+            # Update session to prevent logout
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, request.user)
+            
+            messages.success(request, 'Password changed successfully!')
+            return redirect('users:profile')
+    
+    return render(request, 'users/change_password.html')

@@ -177,7 +177,7 @@
                         <span class="font-medium text-sm sm:text-base">Explore</span>
                     </a>
 
-                    <a href="#"
+                    <a href="{% url 'users:profile' %}"
                         class="group bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
                         <i class="fas fa-user-cog text-lg"></i>
                         <span class="font-medium text-sm sm:text-base">Profile Settings</span>
@@ -202,10 +202,10 @@
                         <span class="font-medium text-sm sm:text-base">Analytics</span>
                     </a>
 
-                    <a href="#"
+                    <a href="{% url 'users:profile' %}"
                         class="group bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
-                        <i class="fas fa-users text-lg"></i>
-                        <span class="font-medium text-sm sm:text-base">Students</span>
+                        <i class="fas fa-user-cog text-lg"></i>
+                        <span class="font-medium text-sm sm:text-base">Profile Settings</span>
                     </a>
                     {% endif %}
                 </div>
@@ -245,8 +245,7 @@
                                 </p>
                                 {% elif activity.type == 'student_enrolled' %}
                                 <p class="text-sm text-gray-900 dark:text-white">
-                                    <span class="font-medium">{{ activity.student }}</span> enrolled in {{
-                                    activity.course }}
+                                    <span class="font-medium">{{ activity.student }}</span> enrolled in {{ activity.course }}
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ activity.date|timesince }} ago
@@ -305,7 +304,8 @@
                                 <i class="fas fa-book text-blue-600 dark:text-blue-400"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ course.title }}</h4>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ course.title
+                                    }}</h4>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                     by {{ course.instructor.username }}
                                 </p>
@@ -354,8 +354,7 @@
                                 <i class="fas fa-chalkboard-teacher text-green-600 dark:text-green-400"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ course.title
-                                    }}</h4>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ course.title }}</h4>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ course.enrollment_set.count }} student{{ course.enrollment_set.count|pluralize }}
                                 </p>

@@ -1,0 +1,175 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Edit Profile - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
+            <a href="{% url 'users:dashboard' %}" class="hover:text-blue-600">Dashboard</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="{% url 'users:profile' %}" class="hover:text-blue-600">Profile</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Edit Profile</span>
+        </nav>
+
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Edit Profile</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">Update your personal information</p>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div class="p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Profile Picture Section -->
+                <div class="text-center mb-8">
+                    <div
+                        class="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user text-white text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Profile Picture</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Profile pictures coming soon!</p>
+                </div>
+
+                <!-- Basic Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            First Name
+                        </label>
+                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter your first name">
+                    </div>
+
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Last Name
+                        </label>
+                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter your last name">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Email Address *
+                    </label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter your email address">
+                </div>
+
+                <!-- Read-only Information -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Username</label>
+                            <p class="text-gray-900 dark:text-white">{{ user.username }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Username cannot be changed</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Role</label>
+                            <p class="text-gray-900 dark:text-white">{{ user.get_role_display }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Role cannot be changed</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Member
+                                Since</label>
+                            <p class="text-gray-900 dark:text-white">{{ user.date_joined|date:"F d, Y" }}</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Last
+                                Login</label>
+                            <p class="text-gray-900 dark:text-white">
+                                {% if user.last_login %}
+                                {{ user.last_login|date:"F d, Y g:i A" }}
+                                {% else %}
+                                Never
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <a href="{% url 'users:profile' %}"
+                        class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Profile
+                    </a>
+
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="history.back()"
+                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Additional Settings -->
+    <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Additional Settings</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="{% url 'users:change_password' %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div
+                    class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-key text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">Change Password</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Update your account password for security</p>
+                </div>
+            </a>
+
+            <div class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg opacity-50">
+                <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-bell text-gray-400 text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-500 dark:text-gray-400">Notifications</h4>
+                    <p class="text-sm text-gray-400 dark:text-gray-500">Email preferences (Coming Soon)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const email = document.getElementById('email').value.trim();
+
+        if (!email) {
+            e.preventDefault();
+            alert('Email is required.');
+            return false;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            alert('Please enter a valid email address.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

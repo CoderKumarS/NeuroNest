@@ -1,0 +1,310 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Profile - {{ user.username }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Profile Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 h-32"></div>
+        <div class="relative px-8 pb-8">
+            <!-- Profile Picture -->
+            <div class="absolute -top-16 left-8">
+                <div
+                    class="w-32 h-32 bg-white dark:bg-gray-800 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center shadow-lg">
+                    <div
+                        class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="pt-20 flex items-start justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                        {% if user.first_name or user.last_name %}
+                        {{ user.first_name }} {{ user.last_name }}
+                        {% else %}
+                        {{ user.username }}
+                        {% endif %}
+                    </h1>
+                    <p class="text-lg text-gray-600 dark:text-gray-300 mb-2">@{{ user.username }}</p>
+                    <div class="flex items-center space-x-4">
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                            {% if user.role == 'student' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                            {% elif user.role == 'instructor' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                            {% else %}bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200{% endif %}">
+                            <i
+                                class="fas {% if user.role == 'student' %}fa-user-graduate{% elif user.role == 'instructor' %}fa-chalkboard-teacher{% else %}fa-user-shield{% endif %} mr-2"></i>
+                            {{ user.get_role_display }}
+                        </span>
+                        <span class="text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-calendar mr-1"></i>
+                            Joined {{ user.date_joined|date:"M Y" }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-3">
+                    <a href="{% url 'users:edit_profile' %}"
+                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-edit mr-2"></i>Edit Profile
+                    </a>
+                    <a href="{% url 'users:change_password' %}"
+                        class="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-key mr-2"></i>Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Profile Details -->
+        <div class="lg:col-span-1">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Profile Details</h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Username</label>
+                        <p class="text-gray-900 dark:text-white">{{ user.username }}</p>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</label>
+                        <p class="text-gray-900 dark:text-white">{{ user.email }}</p>
+                    </div>
+
+                    {% if user.first_name %}
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">First Name</label>
+                        <p class="text-gray-900 dark:text-white">{{ user.first_name }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if user.last_name %}
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Name</label>
+                        <p class="text-gray-900 dark:text-white">{{ user.last_name }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Role</label>
+                        <p class="text-gray-900 dark:text-white">{{ user.get_role_display }}</p>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Member Since</label>
+                        <p class="text-gray-900 dark:text-white">{{ user.date_joined|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Quick Stats</h2>
+
+                {% if is_student %}
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Enrolled Courses</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ total_courses|default:0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Completed Courses</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ completed_courses|default:0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Quiz Attempts</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ quiz_attempts|default:0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Average Score</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ avg_score|default:0 }}%</span>
+                    </div>
+                </div>
+                {% elif is_instructor %}
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Courses Created</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ total_courses|default:0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Total Students</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ total_students|default:0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">Quizzes Created</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ total_quizzes|default:0 }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Activity & Recent Items -->
+        <div class="lg:col-span-2">
+            {% if is_student %}
+            <!-- Recent Enrollments -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Recent Enrollments</h2>
+
+                {% if recent_enrollments %}
+                <div class="space-y-4">
+                    {% for enrollment in recent_enrollments %}
+                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <div
+                                class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-book text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white">{{ enrollment.course.title }}
+                                </h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    by {{ enrollment.course.instructor.username }} • {{ enrollment.enrolled_at|date:"M d, Y" }}
+                                </p>
+                            </div>
+                        </div>
+                        <a href="{% url 'courses:course_detail' enrollment.course.id %}"
+                            class="text-blue-600 hover:text-blue-700 font-medium">
+                            View Course
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if total_courses > 5 %}
+                <div class="text-center mt-6">
+                    <a href="{% url 'courses:my_courses' %}" class="text-blue-600 hover:text-blue-700 font-medium">
+                        View All Courses ({{ total_courses }}) →
+                    </a>
+                </div>
+                {% endif %}
+
+                {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-book text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">No courses enrolled yet</p>
+                    <a href="{% url 'courses:course_list' %}"
+                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        Browse Courses
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            {% elif is_instructor %}
+            <!-- Recent Courses -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Recent Courses</h2>
+
+                {% if recent_courses %}
+                <div class="space-y-4">
+                    {% for course in recent_courses %}
+                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <div
+                                class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chalkboard-teacher text-green-600 dark:text-green-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white">{{ course.title }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    {{ course.enrollment_set.count }} student{{ course.enrollment_set.count|pluralize }}
+                                    • {{ course.created_at|date:"M d, Y" }}
+                                </p>
+                            </div>
+                        </div>
+                        <a href="{% url 'courses:manage_course' course.id %}"
+                            class="text-green-600 hover:text-green-700 font-medium">
+                            Manage
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if total_courses > 5 %}
+                <div class="text-center mt-6">
+                    <a href="{% url 'courses:course_list' %}" class="text-green-600 hover:text-green-700 font-medium">
+                        View All Courses ({{ total_courses }}) →
+                    </a>
+                </div>
+                {% endif %}
+
+                {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-chalkboard-teacher text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">No courses created yet</p>
+                    <a href="{% url 'courses:create_course' %}"
+                        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                        Create Course
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Account Settings -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Account Settings</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="{% url 'users:edit_profile' %}"
+                        class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-user-edit text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Edit Profile</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Update your personal information</p>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'users:change_password' %}"
+                        class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-key text-yellow-600 dark:text-yellow-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Change Password</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Update your account password</p>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'users:dashboard' %}"
+                        class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-tachometer-alt text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Dashboard</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Go to your main dashboard</p>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'users:logout' %}"
+                        class="flex items-center p-4 border border-red-200 dark:border-red-800 rounded-lg hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-sign-out-alt text-red-600 dark:text-red-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-red-900 dark:text-red-100">Logout</h3>
+                            <p class="text-sm text-red-600 dark:text-red-300">Sign out of your account</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
