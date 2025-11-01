@@ -1,0 +1,252 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Course Explorer - EduLearn{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Discover Your Next Course</h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">
+                Explore our comprehensive course catalog and find the perfect learning path for your goals
+            </p>
+
+            <!-- Search and Filter -->
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl p-6 shadow-xl">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <input type="text" placeholder="Search courses, topics, or instructors..."
+                                class="w-full px-6 py-4 text-gray-900 rounded-xl border-0 focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div class="flex gap-2">
+                            <select
+                                class="px-6 py-4 text-gray-900 rounded-xl border-0 focus:ring-2 focus:ring-purple-500">
+                                <option>All Categories</option>
+                                <option>Programming</option>
+                                <option>Design</option>
+                                <option>Business</option>
+                                <option>Data Science</option>
+                            </select>
+                            <button
+                                class="bg-purple-600 text-white px-8 py-4 rounded-xl hover:bg-purple-700 transition-colors">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <!-- Featured Courses -->
+    <section class="mb-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Featured Courses</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300">Hand-picked courses from our top instructors</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for course in featured_courses %}
+            <div
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <!-- Course Image -->
+                <div
+                    class="h-48 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center relative">
+                    <i class="fas fa-book text-white text-4xl"></i>
+                    <div
+                        class="absolute top-4 left-4 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-sm font-semibold">
+                        Featured
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ course.title }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{{ course.description|truncatewords:20 }}</p>
+
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-user mr-1"></i>
+                            <span>{{ course.instructor.username }}</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-users mr-1"></i>
+                            <span>{{ course.enrollment_count }} students</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 mr-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-sm text-gray-600 dark:text-gray-300">4.9</span>
+                        </div>
+                        <a href="{% url 'courses:course_detail' course.id %}"
+                            class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                            Explore
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Popular Courses -->
+    <section class="mb-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Most Popular</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300">Courses with the highest enrollment</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for course in popular_courses %}
+            <div
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+                <!-- Course Image -->
+                <div
+                    class="h-48 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center relative">
+                    <i class="fas fa-trophy text-white text-4xl"></i>
+                    <div
+                        class="absolute top-4 right-4 bg-white dark:bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold text-gray-900 dark:text-white">
+                        #{{ forloop.counter }}
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ course.title }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{{ course.description|truncatewords:20 }}</p>
+
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-user mr-1"></i>
+                            <span>{{ course.instructor.username }}</span>
+                        </div>
+                        <div class="flex items-center text-sm text-green-600 dark:text-green-400 font-semibold">
+                            <i class="fas fa-fire mr-1"></i>
+                            <span>{{ course.enrollment_count }} enrolled</span>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'courses:course_detail' course.id %}"
+                        class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors text-center block">
+                        Join Now
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Course Categories -->
+    <section class="mb-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Browse by Category</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300">Find courses in your area of interest</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Programming -->
+            <div
+                class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-white text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
+                <div
+                    class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-code text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Programming</h3>
+                <p class="text-blue-100 mb-4">Web development, mobile apps, and more</p>
+                <div class="text-sm opacity-75">120+ courses</div>
+            </div>
+
+            <!-- Design -->
+            <div
+                class="bg-gradient-to-br from-pink-500 to-red-600 rounded-2xl p-8 text-white text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
+                <div
+                    class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-palette text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Design</h3>
+                <p class="text-pink-100 mb-4">UI/UX, graphic design, and creativity</p>
+                <div class="text-sm opacity-75">85+ courses</div>
+            </div>
+
+            <!-- Business -->
+            <div
+                class="bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl p-8 text-white text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
+                <div
+                    class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-chart-line text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Business</h3>
+                <p class="text-green-100 mb-4">Marketing, management, and entrepreneurship</p>
+                <div class="text-sm opacity-75">95+ courses</div>
+            </div>
+
+            <!-- Data Science -->
+            <div
+                class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl p-8 text-white text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
+                <div
+                    class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-database text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Data Science</h3>
+                <p class="text-yellow-100 mb-4">Analytics, AI, and machine learning</p>
+                <div class="text-sm opacity-75">75+ courses</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="text-center">
+        <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl p-12 text-white">
+            <h2 class="text-3xl font-bold mb-4">Ready to Start Learning?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">
+                Join thousands of students who are already advancing their careers with our courses
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'courses:course_list' %}"
+                    class="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+                    Browse All Courses
+                </a>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'users:register' %}"
+                    class="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                    Sign Up Free
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Add some interactivity to category cards
+    document.querySelectorAll('.cursor-pointer').forEach(card => {
+        card.addEventListener('click', function () {
+            // You could implement category filtering here
+            window.location.href = "{% url 'courses:course_list' %}";
+        });
+    });
+
+    // Search functionality
+    document.querySelector('input[type="text"]').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const searchTerm = this.value;
+            window.location.href = `{% url 'courses:course_list' %}?search=${encodeURIComponent(searchTerm)}`;
+        }
+    });
+
+    document.querySelector('button').addEventListener('click', function () {
+        const searchTerm = document.querySelector('input[type="text"]').value;
+        window.location.href = `{% url 'courses:course_list' %}?search=${encodeURIComponent(searchTerm)}`;
+    });
+</script>
+{% endblock %}

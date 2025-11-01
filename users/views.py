@@ -1,7 +1,3 @@
-from rest_framework import generics, permissions, status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -9,47 +5,13 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from .serializers import RegisterSerializer
 from .models import CustomUser
 import json
 
 
-# API Views
-class RegisterView(generics.CreateAPIView):
-    serializer_class = RegisterSerializer
-    permission_classes = [permissions.AllowAny]
+# HTML Views for User Management
 
 
-@api_view(['POST'])
-@permission_classes([permissions.AllowAny])
-def api_login(request):
-    """
-    API endpoint for JWT token-based login
-    """
-    username = request.data.get('username')
-    password = request.data.get('password')
-    
-    if username and password:
-        user = authenticate(username=username, password=password)
-        if user:
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email,
-                    'role': user.role
-                }
-            })
-        else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    else:
-        return Response({'error': 'Username and password required'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# HTML Views
 def login_view(request):
     """
     HTML login page
@@ -146,21 +108,83 @@ def dashboard_view(request):
     
     # Add role-specific data
     if user.role == 'student':
+        # Import here to avoid circular imports
+        from courses.models import Enrollment, Progress, StudentAnswer
+        
+        # Get student's enrolled courses
+        enrollments = Enrollment.objects.filter(student=user).select_related('course')
+        enrolled_courses_list = [enrollment.course for enrollment in enrollments]
+        
+        # Get progress data
+        progress_records = Progress.objects.filter(student=user)
+        total_completed_lessons = sum(p.completed_lessons for p in progress_records)
+        
+        # Get recent quiz attempts
+        recent_answers = StudentAnswer.objects.filter(student=user).select_related(
+            'question__quiz__course'
+        ).order_by('-submitted_at')[:5]
+        
+        # Calculate certificates (courses with score >= 80%)
+        certificates_earned = progress_records.filter(score__gte=80).count()
+        
+        # Calculate study hours (rough estimate based on completed lessons)
+        study_hours = total_completed_lessons * 0.5  # Assume 30 minutes per lesson
+        
+        # Recent activity
+        recent_activity = []
+        for answer in recent_answers:
+            recent_activity.append({
+                'type': 'quiz_completed',
+                'course': answer.question.quiz.course.title,
+                'quiz': answer.question.quiz.title,
+                'date': answer.submitted_at,
+                'score': None  # We'd need to calculate this
+            })
+        
         context.update({
-            'enrolled_courses': 0,  # TODO: Add actual course data
-            'completed_lessons': 0,
-            'certificates_earned': 0,
-            'study_hours': 0,
-            'recent_activity': [],
+            'enrolled_courses': enrollments.count(),
+            'enrolled_courses_list': enrolled_courses_list[:3],  # Show first 3
+            'completed_lessons': total_completed_lessons,
+            'certificates_earned': certificates_earned,
+            'study_hours': int(study_hours),
+            'recent_activity': recent_activity,
             'recommended_courses': [],
         })
+        
     elif user.role == 'instructor':
+        # Import here to avoid circular imports
+        from courses.models import Course, Enrollment
+        
+        # Get instructor's courses
+        instructor_courses = Course.objects.filter(instructor=user)
+        
+        # Get total students across all courses
+        total_students = Enrollment.objects.filter(course__instructor=user).count()
+        
+        # Get total quizzes (lessons)
+        total_lessons = sum(course.quizzes.count() for course in instructor_courses)
+        
+        # Recent activity for instructors
+        recent_enrollments = Enrollment.objects.filter(
+            course__instructor=user
+        ).select_related('student', 'course').order_by('-enrolled_at')[:5]
+        
+        recent_activity = []
+        for enrollment in recent_enrollments:
+            recent_activity.append({
+                'type': 'student_enrolled',
+                'student': enrollment.student.username,
+                'course': enrollment.course.title,
+                'date': enrollment.enrolled_at
+            })
+        
         context.update({
-            'created_courses': 0,  # TODO: Add actual course data
-            'total_students': 0,
-            'total_lessons': 0,
-            'course_ratings': 0,
-            'recent_activity': [],
+            'created_courses': instructor_courses.count(),
+            'created_courses_list': instructor_courses[:3],  # Show first 3
+            'total_students': total_students,
+            'total_lessons': total_lessons,
+            'course_ratings': 4.8,  # Placeholder for now
+            'recent_activity': recent_activity,
             'pending_approvals': [],
         })
     

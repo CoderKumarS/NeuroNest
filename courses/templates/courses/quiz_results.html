@@ -1,0 +1,246 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Quiz Results - {{ quiz.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Results Header -->
+    <div class="text-center mb-8">
+        {% if progress.score >= 80 %}
+        <div
+            class="w-24 h-24 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-trophy text-green-600 dark:text-green-400 text-4xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">Excellent Work!</h1>
+        {% elif progress.score >= 60 %}
+        <div class="w-24 h-24 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-thumbs-up text-blue-600 dark:text-blue-400 text-4xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">Good Job!</h1>
+        {% else %}
+        <div
+            class="w-24 h-24 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-redo text-yellow-600 dark:text-yellow-400 text-4xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">Keep Practicing!</h1>
+        {% endif %}
+
+        <p class="text-lg text-gray-600 dark:text-gray-300 mb-4">{{ quiz.title }}</p>
+        <p class="text-gray-500 dark:text-gray-400">{{ quiz.course.title }}</p>
+    </div>
+
+    <!-- Score Summary -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+        <div class="text-center">
+            <div class="text-6xl font-bold mb-4 
+                {% if progress.score >= 80 %}text-green-600 dark:text-green-400
+                {% elif progress.score >= 60 %}text-blue-600 dark:text-blue-400
+                {% else %}text-yellow-600 dark:text-yellow-400{% endif %}">
+                {{ progress.score|floatformat:1 }}%
+            </div>
+            <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">Your Score</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        {% with correct=0 %}
+                        {% for answer in student_answers %}
+                        {% if answer.selected_option.is_correct %}
+                        {% with correct=correct|add:1 %}{% endwith %}
+                        {% endif %}
+                        {% endfor %}
+                        {{ correct }}
+                        {% endwith %}
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300">Correct Answers</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ student_answers.count }}</div>
+                    <p class="text-gray-600 dark:text-gray-300">Total Questions</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        {% with incorrect=student_answers.count %}
+                        {% for answer in student_answers %}
+                        {% if answer.selected_option.is_correct %}
+                        {% with incorrect=incorrect|add:"-1" %}{% endwith %}
+                        {% endif %}
+                        {% endfor %}
+                        {{ incorrect }}
+                        {% endwith %}
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300">Incorrect Answers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Results -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Question Review</h2>
+
+        <div class="space-y-6">
+            {% for answer in student_answers %}
+            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex-1">
+                        <span class="text-gray-500 dark:text-gray-400">Q{{ forloop.counter }}:</span>
+                        {{ answer.question.text }}
+                    </h3>
+                    {% if answer.selected_option.is_correct %}
+                    <div class="flex items-center text-green-600 dark:text-green-400 ml-4">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span class="font-semibold">Correct</span>
+                    </div>
+                    {% else %}
+                    <div class="flex items-center text-red-600 dark:text-red-400 ml-4">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        <span class="font-semibold">Incorrect</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    {% for option in answer.question.options.all %}
+                    <div class="p-3 rounded-lg border 
+                        {% if option == answer.selected_option and option.is_correct %}
+                            bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700
+                        {% elif option == answer.selected_option and not option.is_correct %}
+                            bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700
+                        {% elif option.is_correct %}
+                            bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700
+                        {% else %}
+                            bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600
+                        {% endif %}">
+
+                        <div class="flex items-center">
+                            {% if option == answer.selected_option %}
+                            {% if option.is_correct %}
+                            <i class="fas fa-check-circle text-green-600 dark:text-green-400 mr-3"></i>
+                            {% else %}
+                            <i class="fas fa-times-circle text-red-600 dark:text-red-400 mr-3"></i>
+                            {% endif %}
+                            {% elif option.is_correct %}
+                            <i class="fas fa-check-circle text-green-600 dark:text-green-400 mr-3"></i>
+                            {% else %}
+                            <div class="w-5 h-5 mr-3"></div>
+                            {% endif %}
+
+                            <span class="
+                                {% if option == answer.selected_option and option.is_correct %}
+                                    text-green-800 dark:text-green-200 font-semibold
+                                {% elif option == answer.selected_option and not option.is_correct %}
+                                    text-red-800 dark:text-red-200 font-semibold
+                                {% elif option.is_correct %}
+                                    text-green-800 dark:text-green-200 font-semibold
+                                {% else %}
+                                    text-gray-700 dark:text-gray-300
+                                {% endif %}">
+                                {{ option.text }}
+                            </span>
+
+                            {% if option == answer.selected_option %}
+                            <span class="ml-auto text-sm font-medium
+                                {% if option.is_correct %}
+                                    text-green-600 dark:text-green-400
+                                {% else %}
+                                    text-red-600 dark:text-red-400
+                                {% endif %}">
+                                Your Answer
+                            </span>
+                            {% elif option.is_correct and option != answer.selected_option %}
+                            <span class="ml-auto text-sm font-medium text-green-600 dark:text-green-400">
+                                Correct Answer
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Performance Feedback -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Performance Feedback</h2>
+
+        {% if progress.score >= 90 %}
+        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
+            <div class="flex items-start">
+                <i class="fas fa-star text-green-600 dark:text-green-400 text-2xl mr-4 mt-1"></i>
+                <div>
+                    <h3 class="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">Outstanding Performance!
+                    </h3>
+                    <p class="text-green-700 dark:text-green-300">
+                        Excellent work! You've demonstrated a strong understanding of the material.
+                        You're ready to move on to more advanced topics.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% elif progress.score >= 80 %}
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+            <div class="flex items-start">
+                <i class="fas fa-thumbs-up text-blue-600 dark:text-blue-400 text-2xl mr-4 mt-1"></i>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">Great Job!</h3>
+                    <p class="text-blue-700 dark:text-blue-300">
+                        You've shown good understanding of the concepts. Review the questions you missed
+                        to strengthen your knowledge even further.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% elif progress.score >= 60 %}
+        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
+            <div class="flex items-start">
+                <i class="fas fa-lightbulb text-yellow-600 dark:text-yellow-400 text-2xl mr-4 mt-1"></i>
+                <div>
+                    <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Good Effort!</h3>
+                    <p class="text-yellow-700 dark:text-yellow-300">
+                        You're on the right track! Review the course material and focus on the areas
+                        where you had difficulty. Consider retaking the quiz to improve your score.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+            <div class="flex items-start">
+                <i class="fas fa-redo text-red-600 dark:text-red-400 text-2xl mr-4 mt-1"></i>
+                <div>
+                    <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">Keep Learning!</h3>
+                    <p class="text-red-700 dark:text-red-300">
+                        Don't worry - learning takes time! Review the course material carefully and
+                        try the quiz again when you feel more confident with the concepts.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="{% url 'courses:course_detail' quiz.course.id %}"
+            class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-center">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Course
+        </a>
+
+        {% if progress.score < 80 %} <a href="{% url 'courses:take_quiz' quiz.id %}"
+            class="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors text-center">
+            <i class="fas fa-redo mr-2"></i>Retake Quiz
+            </a>
+            {% endif %}
+
+            <a href="{% url 'courses:my_courses' %}"
+                class="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center">
+                <i class="fas fa-book mr-2"></i>My Courses
+            </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Create Course - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Create New Course</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">Share your knowledge with students around the world</p>
+    </div>
+
+    <!-- Course Creation Form -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div class="p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Course Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Course Title *
+                    </label>
+                    <input type="text" id="title" name="title" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter an engaging course title">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Choose a clear, descriptive title that tells students what they'll learn
+                    </p>
+                </div>
+
+                <!-- Course Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Course Description *
+                    </label>
+                    <textarea id="description" name="description" rows="6" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Describe what students will learn in this course..."></textarea>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Provide a detailed description of the course content, learning objectives, and prerequisites
+                    </p>
+                </div>
+
+                <!-- Course Guidelines -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">
+                        <i class="fas fa-lightbulb mr-2"></i>Course Creation Tips
+                    </h3>
+                    <ul class="space-y-2 text-blue-800 dark:text-blue-200">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                            <span>Use a clear, specific title that describes what students will learn</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                            <span>Include learning objectives and outcomes in your description</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                            <span>Mention any prerequisites or required knowledge</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                            <span>After creating, you can add quizzes and learning materials</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <a href="{% url 'courses:course_list' %}"
+                        class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Courses
+                    </a>
+
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="history.back()"
+                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                            <i class="fas fa-plus mr-2"></i>Create Course
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Next Steps Preview -->
+    <div class="mt-8 bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <i class="fas fa-route mr-2"></i>What's Next?
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center">
+                <div
+                    class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-plus text-blue-600 dark:text-blue-400"></i>
+                </div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Add Content</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Create quizzes and learning materials</p>
+            </div>
+            <div class="text-center">
+                <div
+                    class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-users text-green-600 dark:text-green-400"></i>
+                </div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Attract Students</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Share your course and get enrollments</p>
+            </div>
+            <div class="text-center">
+                <div
+                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-chart-line text-purple-600 dark:text-purple-400"></i>
+                </div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Track Progress</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Monitor student engagement and success</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-resize textarea
+    document.getElementById('description').addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const title = document.getElementById('title').value.trim();
+        const description = document.getElementById('description').value.trim();
+
+        if (!title || !description) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+
+        if (title.length < 5) {
+            e.preventDefault();
+            alert('Course title must be at least 5 characters long.');
+            return false;
+        }
+
+        if (description.length < 20) {
+            e.preventDefault();
+            alert('Course description must be at least 20 characters long.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

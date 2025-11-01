@@ -1,0 +1,154 @@
+{% extends 'base/base.html' %}
+
+{% block title %}All Courses - EduLearn{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Explore Our Courses</h1>
+            <p class="text-xl mb-8">Discover thousands of courses to advance your skills</p>
+
+            <!-- Search Bar -->
+            <form method="GET" class="max-w-2xl mx-auto">
+                <div class="relative">
+                    <input type="text" name="search" value="{{ search_query }}"
+                        placeholder="Search courses, instructors, or topics..."
+                        class="w-full px-6 py-4 text-gray-900 rounded-full focus:outline-none focus:ring-4 focus:ring-blue-300">
+                    <button type="submit"
+                        class="absolute right-2 top-2 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Results Info -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                {% if search_query %}
+                Search Results for "{{ search_query }}"
+                {% else %}
+                All Courses
+                {% endif %}
+            </h2>
+            <p class="text-gray-600 dark:text-gray-300">{{ total_courses }} course{{ total_courses|pluralize }} found
+            </p>
+        </div>
+
+        {% if user.is_authenticated and user.role == 'instructor' %}
+        <a href="{% url 'courses:create_course' %}"
+            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="fas fa-plus mr-2"></i>Create Course
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Course Grid -->
+    {% if page_obj %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {% for course in page_obj %}
+        <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            <!-- Course Image Placeholder -->
+            <div class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <i class="fas fa-book text-white text-4xl"></i>
+            </div>
+
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ course.title }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">{{ course.description|truncatewords:20 }}
+                </p>
+
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-user mr-1"></i>
+                        <span>{{ course.instructor.username }}</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-users mr-1"></i>
+                        <span>{{ course.enrollment_count }} student{{ course.enrollment_count|pluralize }}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-calendar mr-1"></i>
+                        {{ course.created_at|date:"M d, Y" }}
+                    </div>
+                    <a href="{% url 'courses:course_detail' course.id %}"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex justify-center">
+        <nav class="flex items-center space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}"
+                class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <i class="fas fa-angle-left"></i>
+            </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
+                href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                class="px-4 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                {{ num }}
+                </a>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                    class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                    class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+                {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- No Courses Found -->
+    <div class="text-center py-16">
+        <i class="fas fa-search text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">No courses found</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-6">
+            {% if search_query %}
+            Try adjusting your search terms or browse all courses.
+            {% else %}
+            Be the first to create a course!
+            {% endif %}
+        </p>
+        {% if search_query %}
+        <a href="{% url 'courses:course_list' %}"
+            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            View All Courses
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

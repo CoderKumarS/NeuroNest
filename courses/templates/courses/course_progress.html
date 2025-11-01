@@ -1,0 +1,335 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Progress - {{ course.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
+            <a href="{% url 'courses:my_courses' %}" class="hover:text-blue-600">My Courses</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="{% url 'courses:course_detail' course.id %}" class="hover:text-blue-600">{{ course.title }}</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Progress</span>
+        </nav>
+
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Course Progress</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300">{{ course.title }}</p>
+            </div>
+            <a href="{% url 'courses:course_detail' course.id %}"
+                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Course
+            </a>
+        </div>
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-percentage text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {% if progress %}{{ progress.progress_percent|floatformat:0 }}%{% else %}0%{% endif %}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">Overall Progress</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-trophy text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {% if progress %}{{ progress.score|floatformat:1 }}%{% else %}0%{% endif %}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">Best Score</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-check-circle text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ completed_quizzes_count }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Quizzes Completed</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-question-circle text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_quizzes }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Total Quizzes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Progress Chart -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Learning Progress</h2>
+
+            <!-- Overall Progress Bar -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-lg font-medium text-gray-700 dark:text-gray-300">Course Completion</span>
+                    <span class="text-lg font-bold text-gray-900 dark:text-white">
+                        {% if progress %}{{ progress.progress_percent|floatformat:0 }}%{% else %}0%{% endif %}
+                    </span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-4 rounded-full transition-all duration-500"
+                        style="width: {% if progress %}{{ progress.progress_percent }}%{% else %}0%{% endif %}"></div>
+                </div>
+            </div>
+
+            <!-- Performance Indicators -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-blue-600 dark:text-blue-400 mr-3"></i>
+                        <span class="text-gray-700 dark:text-gray-300">Time Spent Learning</span>
+                    </div>
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                        {% if progress %}{{ progress.completed_lessons }}{% else %}0{% endif %} sessions
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-600 dark:text-yellow-400 mr-3"></i>
+                        <span class="text-gray-700 dark:text-gray-300">Performance Rating</span>
+                    </div>
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                        {% if progress %}
+                        {% if progress.score >= 90 %}Excellent
+                        {% elif progress.score >= 80 %}Very Good
+                        {% elif progress.score >= 70 %}Good
+                        {% elif progress.score >= 60 %}Fair
+                        {% else %}Needs Improvement
+                        {% endif %}
+                        {% else %}Not Started
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar text-green-600 dark:text-green-400 mr-3"></i>
+                        <span class="text-gray-700 dark:text-gray-300">Last Activity</span>
+                    </div>
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                        {% if progress %}Recently{% else %}Never{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Performance -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Quiz Performance</h2>
+
+            {% if course.quizzes.all %}
+            <div class="space-y-4">
+                {% for quiz in course.quizzes.all %}
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ quiz.title }}</h3>
+                        {% if completed_quizzes_count > 0 %}
+                        <span
+                            class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm font-medium">
+                            Completed
+                        </span>
+                        {% else %}
+                        <span
+                            class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-sm font-medium">
+                            Not Started
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i>{{ quiz.time_limit }} minutes</span>
+                        <span><i class="fas fa-question-circle mr-1"></i>{{ quiz.questions.count }} questions</span>
+                    </div>
+
+                    {% if completed_quizzes_count > 0 %}
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 mr-4">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div class="bg-green-600 h-2 rounded-full"
+                                    style="width: {% if progress %}{{ progress.score }}%{% else %}0%{% endif %}"></div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold text-gray-900 dark:text-white">
+                                {% if progress %}{{ progress.score|floatformat:1 }}%{% else %}0%{% endif %}
+                            </div>
+                            <a href="{% url 'courses:quiz_results' quiz.id %}"
+                                class="text-blue-600 hover:text-blue-700 text-sm">View Results</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center">
+                        <a href="{% url 'courses:take_quiz' quiz.id %}"
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Take Quiz
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <i class="fas fa-question-circle text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <p class="text-gray-600 dark:text-gray-300">No quizzes available yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Achievements and Recommendations -->
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Achievements -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Achievements</h2>
+
+            <div class="space-y-4">
+                {% if progress and progress.score >= 80 %}
+                <div
+                    class="flex items-center p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div
+                        class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-trophy text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-yellow-800 dark:text-yellow-200">High Achiever</h3>
+                        <p class="text-sm text-yellow-700 dark:text-yellow-300">Scored 80% or higher on quizzes</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if completed_quizzes_count > 0 %}
+                <div
+                    class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div
+                        class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-green-800 dark:text-green-200">Quiz Taker</h3>
+                        <p class="text-sm text-green-700 dark:text-green-300">Completed your first quiz</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if progress and progress.progress_percent == 100 %}
+                <div
+                    class="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                    <div
+                        class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-graduation-cap text-purple-600 dark:text-purple-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-purple-800 dark:text-purple-200">Course Complete</h3>
+                        <p class="text-sm text-purple-700 dark:text-purple-300">Finished the entire course</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if not progress or progress.progress_percent == 0 %}
+                <div class="text-center py-8">
+                    <i class="fas fa-medal text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                    <p class="text-gray-600 dark:text-gray-300">Complete quizzes to earn achievements!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Recommendations</h2>
+
+            <div class="space-y-4">
+                {% if not progress or progress.progress_percent < 50 %} <div
+                    class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Keep Learning</h3>
+                    <p class="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                        You're just getting started! Take the available quizzes to test your knowledge.
+                    </p>
+                    <a href="{% url 'courses:course_detail' course.id %}"
+                        class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Continue Course <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+            </div>
+            {% elif progress.score < 70 %} <div
+                class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <h3 class="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Review Material</h3>
+                <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
+                    Consider reviewing the course content and retaking quizzes to improve your score.
+                </p>
+                <a href="{% url 'courses:course_detail' course.id %}"
+                    class="text-yellow-600 hover:text-yellow-700 text-sm font-medium">
+                    Review Course <i class="fas fa-redo ml-1"></i>
+                </a>
+        </div>
+        {% else %}
+        <div class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <h3 class="font-semibold text-green-800 dark:text-green-200 mb-2">Great Progress!</h3>
+            <p class="text-sm text-green-700 dark:text-green-300 mb-3">
+                You're doing excellent! Consider exploring more advanced courses in this topic.
+            </p>
+            <a href="{% url 'courses:course_list' %}" class="text-green-600 hover:text-green-700 text-sm font-medium">
+                Explore More Courses <i class="fas fa-search ml-1"></i>
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">Study Tips</h3>
+            <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                <li>• Take notes while studying</li>
+                <li>• Practice regularly with quizzes</li>
+                <li>• Review incorrect answers</li>
+                <li>• Set learning goals</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<script>
+    // Animate progress bars on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        const progressBars = document.querySelectorAll('.bg-gradient-to-r, .bg-green-600');
+
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

@@ -19,7 +19,7 @@
                     class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
                     Start Learning Today
                 </a>
-                <a href="#courses"
+                <a href="{% url 'courses:course_list' %}"
                     class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
                     Browse Courses
                 </a>
@@ -169,7 +169,8 @@
         </div>
 
         <div class="text-center mt-12">
-            <a href="#" class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors">
+            <a href="{% url 'courses:course_list' %}"
+                class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors">
                 View All Courses
             </a>
         </div>

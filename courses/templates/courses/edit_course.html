@@ -1,0 +1,181 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Edit {{ course.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
+            <a href="{% url 'courses:course_list' %}" class="hover:text-blue-600">Courses</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="{% url 'courses:course_detail' course.id %}" class="hover:text-blue-600">{{ course.title }}</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Edit</span>
+        </nav>
+
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Edit Course</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">Update your course details</p>
+    </div>
+
+    <!-- Course Edit Form -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div class="p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Course Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Course Title *
+                    </label>
+                    <input type="text" id="title" name="title" value="{{ course.title }}" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter course title">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Choose a clear, descriptive title that tells students what they'll learn
+                    </p>
+                </div>
+
+                <!-- Course Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Course Description *
+                    </label>
+                    <textarea id="description" name="description" rows="6" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Describe what students will learn in this course...">{{ course.description }}</textarea>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Provide a detailed description of the course content, learning objectives, and prerequisites
+                    </p>
+                </div>
+
+                <!-- Course Stats -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Course Statistics</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ course.enrollment.count
+                                }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">Students Enrolled</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ course.quizzes.count
+                                }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">Quizzes Created</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{
+                                course.created_at|date:"M d, Y" }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">Created On</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warning Notice -->
+                <div
+                    class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
+                    <div class="flex items-start">
+                        <i
+                            class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 text-xl mr-3 mt-1"></i>
+                        <div>
+                            <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Important Notice
+                            </h3>
+                            <p class="text-yellow-700 dark:text-yellow-300">
+                                Changes to your course will be visible to all enrolled students immediately.
+                                Make sure your updates are accurate and complete before saving.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <a href="{% url 'courses:course_detail' course.id %}"
+                        class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Course
+                    </a>
+
+                    <div class="flex space-x-4">
+                        <a href="{% url 'courses:manage_course' course.id %}"
+                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            Manage Course
+                        </a>
+                        <button type="submit"
+                            class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="{% url 'courses:create_quiz' course.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-plus text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">Add Quiz</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Create a new quiz for this course</p>
+                </div>
+            </a>
+
+            <a href="{% url 'courses:manage_course' course.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-cog text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">Manage Course</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">View students and course analytics</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-resize textarea
+    document.getElementById('description').addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const title = document.getElementById('title').value.trim();
+        const description = document.getElementById('description').value.trim();
+
+        if (!title || !description) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+
+        if (title.length < 5) {
+            e.preventDefault();
+            alert('Course title must be at least 5 characters long.');
+            return false;
+        }
+
+        if (description.length < 20) {
+            e.preventDefault();
+            alert('Course description must be at least 20 characters long.');
+            return false;
+        }
+    });
+
+    // Auto-resize textarea on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        const textarea = document.getElementById('description');
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    });
+</script>
+{% endblock %}

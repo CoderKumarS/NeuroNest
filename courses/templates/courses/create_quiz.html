@@ -1,0 +1,166 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Create Quiz - {{ course.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
+            <a href="{% url 'courses:course_list' %}" class="hover:text-blue-600">Courses</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="{% url 'courses:course_detail' course.id %}" class="hover:text-blue-600">{{ course.title }}</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Create Quiz</span>
+        </nav>
+
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create New Quiz</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">Add a quiz to {{ course.title }}</p>
+    </div>
+
+    <!-- Quiz Creation Form -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div class="p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Quiz Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Quiz Title *
+                    </label>
+                    <input type="text" id="title" name="title" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter quiz title (e.g., 'Chapter 1 Assessment')">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Choose a descriptive title that indicates what the quiz covers
+                    </p>
+                </div>
+
+                <!-- Time Limit -->
+                <div>
+                    <label for="time_limit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Time Limit (minutes)
+                    </label>
+                    <select id="time_limit" name="time_limit"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <option value="5">5 minutes</option>
+                        <option value="10">10 minutes</option>
+                        <option value="15" selected>15 minutes</option>
+                        <option value="20">20 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1.5 hours</option>
+                        <option value="120">2 hours</option>
+                    </select>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Set an appropriate time limit based on quiz difficulty and length
+                    </p>
+                </div>
+
+                <!-- Quiz Guidelines -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">
+                        <i class="fas fa-lightbulb mr-2"></i>Quiz Creation Tips
+                    </h3>
+                    <ul class="space-y-2 text-blue-800 dark:text-blue-200">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                            <span>Start with a clear, descriptive title</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                            <span>Set a reasonable time limit (1-2 minutes per question is typical)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                            <span>After creating the quiz, you'll be able to add questions and options</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                            <span>Make sure questions are clear and have one correct answer</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <a href="{% url 'courses:manage_course' course.id %}"
+                        class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Course Management
+                    </a>
+
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="history.back()"
+                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                            <i class="fas fa-plus mr-2"></i>Create Quiz
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Next Steps Preview -->
+    <div class="mt-8 bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <i class="fas fa-route mr-2"></i>What's Next?
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center">
+                <div
+                    class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-question text-blue-600 dark:text-blue-400"></i>
+                </div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Add Questions</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Create questions with multiple choice options</p>
+            </div>
+            <div class="text-center">
+                <div
+                    class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-eye text-green-600 dark:text-green-400"></i>
+                </div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Preview Quiz</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Test your quiz before students take it</p>
+            </div>
+            <div class="text-center">
+                <div
+                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-users text-purple-600 dark:text-purple-400"></i>
+                </div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Student Access</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Students can take the quiz once published</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const title = document.getElementById('title').value.trim();
+
+        if (!title) {
+            e.preventDefault();
+            alert('Please enter a quiz title.');
+            return false;
+        }
+
+        if (title.length < 3) {
+            e.preventDefault();
+            alert('Quiz title must be at least 3 characters long.');
+            return false;
+        }
+    });
+
+    // Auto-focus on title field
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('title').focus();
+    });
+</script>
+{% endblock %}

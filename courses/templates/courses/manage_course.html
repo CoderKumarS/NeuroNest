@@ -1,0 +1,216 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Manage {{ course.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Manage Course</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">{{ course.title }}</p>
+        </div>
+        <div class="flex space-x-4">
+            <a href="{% url 'courses:course_detail' course.id %}"
+                class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                <i class="fas fa-eye mr-2"></i>View Course
+            </a>
+            <a href="{% url 'courses:edit_course' course.id %}"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-edit mr-2"></i>Edit Details
+            </a>
+        </div>
+    </div>
+
+    <!-- Course Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-users text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_students }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Students</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-question-circle text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_quizzes }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Quizzes</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-calendar text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ course.created_at|date:"M d" }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Created</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-star text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">4.8</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Rating</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Quizzes Management -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Quizzes</h2>
+                <a href="{% url 'courses:create_quiz' course.id %}"
+                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Quiz
+                </a>
+            </div>
+
+            {% if quizzes %}
+            <div class="space-y-4">
+                {% for quiz in quizzes %}
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ quiz.title }}</h3>
+                            <p class="text-gray-600 dark:text-gray-300">
+                                <i class="fas fa-clock mr-1"></i>{{ quiz.time_limit }} minutes
+                                <span class="ml-4">
+                                    <i class="fas fa-question-circle mr-1"></i>{{ quiz.questions.count }} questions
+                                </span>
+                            </p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="{% url 'courses:take_quiz' quiz.id %}"
+                                class="text-blue-600 hover:text-blue-700 p-2" title="Preview Quiz">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="text-red-600 hover:text-red-700 p-2" title="Delete Quiz">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <i class="fas fa-question-circle text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">No quizzes created yet</p>
+                <a href="{% url 'courses:create_quiz' course.id %}"
+                    class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                    Create Your First Quiz
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Students Management -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Enrolled Students</h2>
+
+            {% if enrollments %}
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                {% for enrollment in enrollments %}
+                <div
+                    class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                        <div
+                            class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ enrollment.student.username }}
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Enrolled {{ enrollment.enrolled_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        {% with progress=enrollment.student.progress_set.first %}
+                        {% if progress %}
+                        <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                            {{ progress.progress_percent|floatformat:0 }}%
+                        </div>
+                        <div class="text-xs text-gray-600 dark:text-gray-300">
+                            Score: {{ progress.score|floatformat:1 }}%
+                        </div>
+                        {% else %}
+                        <div class="text-sm text-gray-600 dark:text-gray-300">Not started</div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <i class="fas fa-users text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">No students enrolled yet</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Share your course to attract students!
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="{% url 'courses:create_quiz' course.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-plus text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Add Quiz</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Create a new quiz for students</p>
+                </div>
+            </a>
+
+            <a href="{% url 'courses:edit_course' course.id %}"
+                class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-edit text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Edit Course</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Update course details</p>
+                </div>
+            </a>
+
+            <div class="flex items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div
+                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-share text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Share Course</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Promote to get more students</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

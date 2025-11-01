@@ -1,0 +1,240 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ quiz.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Quiz Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{{ quiz.title }}</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300 mb-6">{{ quiz.course.title }}</p>
+
+            <div class="flex items-center justify-center space-x-8 text-gray-600 dark:text-gray-300">
+                <div class="flex items-center">
+                    <i class="fas fa-clock mr-2 text-blue-600"></i>
+                    <span>{{ quiz.time_limit }} minutes</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-question-circle mr-2 text-green-600"></i>
+                    <span>{{ questions.count }} question{{ questions.count|pluralize }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Instructions -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-8">
+        <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">
+            <i class="fas fa-info-circle mr-2"></i>Quiz Instructions
+        </h3>
+        <ul class="space-y-2 text-blue-800 dark:text-blue-200">
+            <li class="flex items-start">
+                <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                <span>Read each question carefully before selecting your answer</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                <span>You have {{ quiz.time_limit }} minutes to complete this quiz</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                <span>Select one answer for each question</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1"></i>
+                <span>Click "Submit Quiz" when you're finished</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Quiz Form -->
+    <form method="post" id="quiz-form" class="space-y-8">
+        {% csrf_token %}
+
+        {% for question in questions %}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                <span class="text-blue-600 dark:text-blue-400">Question {{ forloop.counter }}:</span>
+                {{ question.text }}
+            </h3>
+
+            <div class="space-y-3">
+                {% for option in question.options.all %}
+                <label
+                    class="flex items-start p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                    <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}"
+                        class="mt-1 mr-4 text-blue-600 focus:ring-blue-500 focus:ring-2" required>
+                    <span class="text-gray-900 dark:text-white">{{ option.text }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Timer and Submit -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div id="timer" class="flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                        <i class="fas fa-clock mr-2 text-blue-600"></i>
+                        <span id="time-remaining">{{ quiz.time_limit }}:00</span>
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">
+                        Time remaining
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <a href="{% url 'courses:course_detail' quiz.course.id %}"
+                        class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit" id="submit-btn"
+                        class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                        <i class="fas fa-check mr-2"></i>Submit Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="submit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md mx-4">
+        <div class="text-center">
+            <div
+                class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Submit Quiz?</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">
+                Are you sure you want to submit your quiz? You won't be able to change your answers after submission.
+            </p>
+            <div class="flex space-x-4">
+                <button type="button" id="cancel-submit"
+                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    Continue Quiz
+                </button>
+                <button type="button" id="confirm-submit"
+                    class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    Submit Now
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Timer functionality
+    let timeLimit = {{ quiz.time_limit }} * 60; // Convert to seconds
+    let timeRemaining = timeLimit;
+
+    function updateTimer() {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        document.getElementById('time-remaining').textContent = timeString;
+
+        // Change color when time is running low
+        const timerElement = document.getElementById('timer');
+        if (timeRemaining <= 300) { // 5 minutes
+            timerElement.classList.add('text-red-600');
+            timerElement.classList.remove('text-gray-900', 'dark:text-white');
+        } else if (timeRemaining <= 600) { // 10 minutes
+            timerElement.classList.add('text-yellow-600');
+            timerElement.classList.remove('text-gray-900', 'dark:text-white');
+        }
+
+        if (timeRemaining <= 0) {
+            // Auto-submit when time runs out
+            document.getElementById('quiz-form').submit();
+            return;
+        }
+
+        timeRemaining--;
+    }
+
+    // Start timer
+    const timerInterval = setInterval(updateTimer, 1000);
+
+    // Form submission with confirmation
+    document.getElementById('quiz-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Check if all questions are answered
+        const questions = {{ questions.count }
+    };
+    let answeredQuestions = 0;
+
+    for (let i = 1; i <= questions; i++) {
+        const questionInputs = document.querySelectorAll(`input[name^="question_"]`);
+        questionInputs.forEach(input => {
+            if (input.checked) {
+                answeredQuestions++;
+            }
+        });
+    }
+
+    // Count unique answered questions
+    const answeredQuestionNames = new Set();
+    document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+        answeredQuestionNames.add(input.name);
+    });
+
+    if (answeredQuestionNames.size < questions) {
+        alert(`Please answer all questions. You have answered ${answeredQuestionNames.size} out of ${questions} questions.`);
+        return;
+    }
+
+    // Show confirmation modal
+    document.getElementById('submit-modal').classList.remove('hidden');
+    document.getElementById('submit-modal').classList.add('flex');
+});
+
+    // Modal event listeners
+    document.getElementById('cancel-submit').addEventListener('click', function () {
+        document.getElementById('submit-modal').classList.add('hidden');
+        document.getElementById('submit-modal').classList.remove('flex');
+    });
+
+    document.getElementById('confirm-submit').addEventListener('click', function () {
+        clearInterval(timerInterval);
+        document.getElementById('quiz-form').submit();
+    });
+
+    // Prevent accidental page refresh
+    window.addEventListener('beforeunload', function (e) {
+        if (timeRemaining > 0) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    // Auto-save progress (optional enhancement)
+    function saveProgress() {
+        const formData = new FormData(document.getElementById('quiz-form'));
+        // You could implement auto-save functionality here
+    }
+
+    // Save progress every 30 seconds
+    setInterval(saveProgress, 30000);
+
+    // Highlight selected options
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            // Remove highlight from all options in this question
+            const questionContainer = this.closest('.bg-white, .dark\\:bg-gray-800');
+            questionContainer.querySelectorAll('label').forEach(label => {
+                label.classList.remove('bg-blue-50', 'dark:bg-blue-900/20', 'border-blue-300', 'dark:border-blue-700');
+            });
+
+            // Highlight selected option
+            const selectedLabel = this.closest('label');
+            selectedLabel.classList.add('bg-blue-50', 'dark:bg-blue-900/20', 'border-blue-300', 'dark:border-blue-700');
+        });
+    });
+</script>
+{% endblock %}

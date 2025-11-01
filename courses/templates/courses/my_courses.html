@@ -1,0 +1,175 @@
+{% extends 'base/base.html' %}
+
+{% block title %}My Courses - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">My Learning Journey</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">Track your progress and continue learning</p>
+    </div>
+
+    {% if enrolled_courses %}
+    <!-- Course Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-book text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ enrolled_courses|length }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Enrolled Course{{ enrolled_courses|length|pluralize }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-trophy text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ completed_courses }}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">Completed</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-chart-line text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ average_progress|floatformat:0 }}%
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">Avg. Progress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for course_data in enrolled_courses %}
+        <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            <!-- Course Image -->
+            <div class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center relative">
+                <i class="fas fa-book text-white text-4xl"></i>
+
+                <!-- Progress Badge -->
+                {% if course_data.progress %}
+                <div
+                    class="absolute top-4 right-4 bg-white dark:bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold">
+                    {{ course_data.progress.progress_percent|floatformat:0 }}%
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ course_data.course.title }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{{ course_data.course.description|truncatewords:15 }}</p>
+
+                <!-- Progress Bar -->
+                {% if course_data.progress %}
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ course_data.progress.progress_percent|floatformat:0 }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            style="width: {% if course_data.progress %}{{ course_data.progress.progress_percent }}%{% else %}0%{% endif %}">
+                        </div>
+                    </div>
+                    {% if course_data.progress.score %}
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                        Latest Score: {{ course_data.progress.score|floatformat:1 }}%
+                    </p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="mb-4">
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-gray-300 dark:bg-gray-600 h-2 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">Not started yet</p>
+                </div>
+                {% endif %}
+
+                <!-- Course Info -->
+                <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-user mr-1"></i>
+                        <span>{{ course_data.course.instructor.username }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar mr-1"></i>
+                        <span>{{ course_data.enrollment.enrolled_at|date:"M d" }}</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-2">
+                    <a href="{% url 'courses:course_detail' course_data.course.id %}"
+                        class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                        Continue
+                    </a>
+                    <a href="{% url 'courses:course_progress' course_data.course.id %}"
+                        class="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center">
+                        Progress
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- No Courses Enrolled -->
+    <div class="text-center py-16">
+        <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-graduation-cap text-gray-400 dark:text-gray-500 text-3xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Start Your Learning Journey</h3>
+        <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+            You haven't enrolled in any courses yet. Explore our course catalog and find something that interests you!
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'courses:course_list' %}"
+                class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                <i class="fas fa-search mr-2"></i>Browse Courses
+            </a>
+            <a href="{% url 'courses:course_explorer' %}"
+                class="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-semibold">
+                <i class="fas fa-compass mr-2"></i>Explore Categories
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Add some interactivity for progress animations
+    document.addEventListener('DOMContentLoaded', function () {
+        const progressBars = document.querySelectorAll('.bg-blue-600');
+
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 300);
+        });
+    });
+</script>
+{% endblock %}
