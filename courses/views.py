@@ -108,7 +108,7 @@ def course_list(request):
             ('category', 'By Category'),
         ]
     }
-    return render(request, 'courses/course_list.html', context)
+    return render(request, 'courses/course/course_list.html', context)
 
 def course_explorer(request):
     """Course explorer with categories and filters"""
@@ -121,7 +121,7 @@ def course_explorer(request):
         'featured_courses': courses[:6],
         'popular_courses': courses.order_by('-enrollment_count')[:6]
     }
-    return render(request, 'courses/course_explorer.html', context)
+    return render(request, 'courses/course/course_explorer.html', context)
 
 def course_detail(request, course_id):
     """Display course details and enrollment status"""
@@ -179,7 +179,7 @@ def course_detail(request, course_id):
     print(f"🔍 DEBUG: Context keys: {list(context.keys())}")
     print(f"🔍 DEBUG: Template path: courses/course_detail.html")
     
-    return render(request, 'courses/course_detail.html', context)
+    return render(request, 'courses/course/course_detail.html', context)
 
 @login_required
 def enroll_course(request, course_id):
@@ -224,7 +224,7 @@ def create_course(request):
         else:
             messages.error(request, 'Please fill in all required fields.')
     
-    return render(request, 'courses/create_course.html')
+    return render(request, 'courses/course/create_course.html')
 
 @login_required
 def edit_course(request, course_id):
@@ -244,7 +244,7 @@ def edit_course(request, course_id):
         return redirect('courses:course_detail', course_id=course.id)
     
     context = {'course': course}
-    return render(request, 'courses/edit_course.html', context)
+    return render(request, 'courses/course/edit_course.html', context)
 
 @login_required
 def manage_course(request, course_id):
@@ -269,7 +269,7 @@ def manage_course(request, course_id):
         'total_quizzes': quizzes.count(),
         'total_chapters': chapters.count()
     }
-    return render(request, 'courses/manage_course.html', context)
+    return render(request, 'courses/course/manage_course.html', context)
 
 @login_required
 def create_quiz(request, course_id):
@@ -306,7 +306,7 @@ def create_quiz(request, course_id):
         'course': course,
         'chapters': chapters
     }
-    return render(request, 'courses/create_quiz.html', context)
+    return render(request, 'courses/quiz/create_quiz.html', context)
 
 @login_required
 def create_topic_quiz(request, topic_id):
@@ -334,7 +334,7 @@ def create_topic_quiz(request, topic_id):
             messages.error(request, 'Please provide a quiz title.')
     
     context = {'topic': topic}
-    return render(request, 'courses/create_topic_quiz.html', context)
+    return render(request, 'courses/quiz/create_topic_quiz.html', context)
 
 @login_required
 def edit_quiz(request, quiz_id):
@@ -355,7 +355,7 @@ def edit_quiz(request, quiz_id):
         return redirect('courses:manage_quiz', quiz_id=quiz.id)
     
     context = {'quiz': quiz}
-    return render(request, 'courses/edit_quiz.html', context)
+    return render(request, 'courses/quiz/edit_quiz.html', context)
 
 @login_required
 def manage_quiz(request, quiz_id):
@@ -374,7 +374,7 @@ def manage_quiz(request, quiz_id):
         'questions': questions,
         'total_questions': questions.count()
     }
-    return render(request, 'courses/manage_quiz.html', context)
+    return render(request, 'courses/quiz/manage_quiz.html', context)
 
 @login_required
 def add_question(request, quiz_id):
@@ -417,7 +417,7 @@ def add_question(request, quiz_id):
             messages.error(request, 'Please fill in all fields.')
     
     context = {'quiz': quiz}
-    return render(request, 'courses/add_question.html', context)
+    return render(request, 'courses/quiz/add_question.html', context)
 
 @login_required
 def edit_question(request, question_id):
@@ -459,7 +459,7 @@ def edit_question(request, question_id):
         'quiz': quiz,
         'options': options
     }
-    return render(request, 'courses/edit_question.html', context)
+    return render(request, 'courses/quiz/edit_question.html', context)
 
 @login_required
 def delete_question(request, question_id):
@@ -535,7 +535,7 @@ def take_quiz(request, quiz_id):
         'quiz': quiz,
         'questions': questions
     }
-    return render(request, 'courses/take_quiz.html', context)
+    return render(request, 'courses/quiz/take_quiz.html', context)
 
 @login_required
 def quiz_results(request, quiz_id):
@@ -559,7 +559,7 @@ def quiz_results(request, quiz_id):
         'student_answers': student_answers,
         'progress': progress
     }
-    return render(request, 'courses/quiz_results.html', context)
+    return render(request, 'courses/quiz/quiz_results.html', context)
 
 @login_required
 def my_courses(request):
@@ -656,7 +656,7 @@ def my_courses(request):
         'completed_count': completed_count,
         'total_enrolled': len(enrolled_courses)
     }
-    return render(request, 'courses/my_courses.html', context)
+    return render(request, 'courses/course/my_courses.html', context)
 
 @login_required
 def course_progress(request, course_id):
@@ -686,7 +686,7 @@ def course_progress(request, course_id):
         'completed_quizzes_count': completed_quizzes.count(),
         'total_quizzes': course.get_total_quizzes()
     }
-    return render(request, 'courses/course_progress.html', context)
+    return render(request, 'courses/course/course_progress.html', context)
 # Debug view to test Django template rendering
 def test_template_rendering(request):
     """Test view to verify Django template rendering is working"""
@@ -741,7 +741,7 @@ def manage_chapters(request, course_id):
         'course': course,
         'chapters': chapters,
     }
-    return render(request, 'courses/manage_chapters.html', context)
+    return render(request, 'courses/chapter/manage_chapters.html', context)
 
 
 @login_required
@@ -774,7 +774,7 @@ def create_chapter(request, course_id):
         'course': course,
         'next_order': course.chapters.count() + 1
     }
-    return render(request, 'courses/create_chapter.html', context)
+    return render(request, 'courses/chapter/create_chapter.html', context)
 
 
 @login_required
@@ -796,7 +796,7 @@ def edit_chapter(request, chapter_id):
         return redirect('courses:manage_chapters', course_id=chapter.course.id)
     
     context = {'chapter': chapter}
-    return render(request, 'courses/edit_chapter.html', context)
+    return render(request, 'courses/chapter/edit_chapter.html', context)
 
 
 def chapter_detail(request, chapter_id):
@@ -834,7 +834,7 @@ def chapter_detail(request, chapter_id):
         'is_instructor': is_instructor,
         'is_enrolled': is_enrolled,
     }
-    return render(request, 'courses/chapter_detail.html', context)
+    return render(request, 'courses/chapter/chapter_detail.html', context)
 
 
 # Topic Management Views
@@ -878,7 +878,7 @@ def create_topic(request, chapter_id):
         'chapter': chapter,
         'next_order': chapter.topics.count() + 1
     }
-    return render(request, 'courses/create_topic.html', context)
+    return render(request, 'courses/topic/create_topic.html', context)
 
 
 @login_required
@@ -907,7 +907,7 @@ def edit_topic(request, topic_id):
             return redirect('courses:topic_detail', topic_id=topic.id)
     
     context = {'topic': topic}
-    return render(request, 'courses/edit_topic.html', context)
+    return render(request, 'courses/topic/edit_topic.html', context)
 
 
 def topic_detail(request, topic_id):
@@ -947,7 +947,7 @@ def topic_detail(request, topic_id):
         'topic_quizzes': topic_quizzes,
         'youtube_embed_url': topic.get_youtube_embed_url(),
     }
-    return render(request, 'courses/topic_detail.html', context)
+    return render(request, 'courses/topic/topic_detail.html', context)
 
 
 @login_required
