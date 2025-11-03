@@ -188,14 +188,14 @@
                 <!-- Other topics in this chapter -->
                 {% for other_topic in topic.chapter.topics.all %}
                 <div
-                    class="flex items-center space-x-3 py-2 {% if other_topic.id == topic.id %}bg-blue-50 dark:bg-blue-900/20 rounded-lg px-3{% endif %}">
+                    class="flex items-center space-x-3 py-2 {% if other_topic.id  ==  topic.id %}bg-blue-50 dark:bg-blue-900/20 rounded-lg px-3{% endif %}">
                     <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs
-                        {% if other_topic.id == topic.id %}bg-blue-600 text-white
+                        {% if other_topic.id  ==  topic.id %}bg-blue-600 text-white
                         {% else %}bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300{% endif %}">
                         {{ other_topic.order }}
                     </div>
                     <a href="{% url 'courses:topic_detail' other_topic.id %}"
-                        class="text-sm {% if other_topic.id == topic.id %}text-blue-600 dark:text-blue-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400{% endif %}">
+                        class="text-sm {% if other_topic.id  ==  topic.id %}text-blue-600 dark:text-blue-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400{% endif %}">
                         {{ other_topic.title }}
                     </a>
                 </div>

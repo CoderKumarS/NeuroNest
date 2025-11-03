@@ -105,9 +105,9 @@
                 <div class="space-y-2">
                     {% for option in answer.question.options.all %}
                     <div class="p-3 rounded-lg border 
-                        {% if option == answer.selected_option and option.is_correct %}
+                        {% if option  ==  answer.selected_option and option.is_correct %}
                             bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700
-                        {% elif option == answer.selected_option and not option.is_correct %}
+                        {% elif option  ==  answer.selected_option and not option.is_correct %}
                             bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700
                         {% elif option.is_correct %}
                             bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700
@@ -129,9 +129,9 @@
                             {% endif %}
 
                             <span class="
-                                {% if option == answer.selected_option and option.is_correct %}
+                                {% if option  ==  answer.selected_option and option.is_correct %}
                                     text-green-800 dark:text-green-200 font-semibold
-                                {% elif option == answer.selected_option and not option.is_correct %}
+                                {% elif option  ==  answer.selected_option and not option.is_correct %}
                                     text-red-800 dark:text-red-200 font-semibold
                                 {% elif option.is_correct %}
                                     text-green-800 dark:text-green-200 font-semibold

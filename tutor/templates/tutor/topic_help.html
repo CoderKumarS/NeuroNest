@@ -1,0 +1,214 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Topic Help - {{ topic.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <!-- Header -->
+        <div class="mb-6">
+            <nav class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <a href="{% url 'courses:course_detail' topic.chapter.course.id %}" class="hover:text-blue-600">
+                    {{ topic.chapter.course.title }}
+                </a>
+                <span class="mx-2">›</span>
+                <a href="{% url 'courses:chapter_detail' topic.chapter.id %}" class="hover:text-blue-600">
+                    {{ topic.chapter.title }}
+                </a>
+                <span class="mx-2">›</span>
+                <span>{{ topic.title }}</span>
+            </nav>
+
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                🤖 AI Help: {{ topic.title }}
+            </h1>
+            <p class="text-gray-600 dark:text-gray-300">
+                Get personalized help and explanations for this topic
+            </p>
+        </div>
+
+        <!-- Topic Context -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                <i class="fas fa-book mr-2"></i>Topic Overview
+            </h3>
+            <p class="text-blue-800 dark:text-blue-200 mb-2">
+                <strong>Description:</strong> {{ topic.description }}
+            </p>
+            {% if topic.notes %}
+            <p class="text-blue-800 dark:text-blue-200">
+                <strong>Notes:</strong> {{ topic.notes|truncatewords:30 }}
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Quick Help Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <button onclick="askQuickQuestion('explain')"
+                class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 p-4 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors text-left">
+                <i class="fas fa-lightbulb text-xl mb-2"></i>
+                <h4 class="font-semibold">Explain This Topic</h4>
+                <p class="text-sm">Get a clear explanation of the main concepts</p>
+            </button>
+
+            <button onclick="askQuickQuestion('summarize')"
+                class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 p-4 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors text-left">
+                <i class="fas fa-list text-xl mb-2"></i>
+                <h4 class="font-semibold">Summarize Key Points</h4>
+                <p class="text-sm">Get a summary of the most important information</p>
+            </button>
+
+            <button onclick="askQuickQuestion('examples')"
+                class="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 p-4 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors text-left">
+                <i class="fas fa-code text-xl mb-2"></i>
+                <h4 class="font-semibold">Show Examples</h4>
+                <p class="text-sm">See practical examples and use cases</p>
+            </button>
+
+            <button onclick="askQuickQuestion('quiz')"
+                class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 p-4 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-left">
+                <i class="fas fa-question-circle text-xl mb-2"></i>
+                <h4 class="font-semibold">Test My Knowledge</h4>
+                <p class="text-sm">Get questions to test your understanding</p>
+            </button>
+        </div>
+
+        <!-- Custom Question Form -->
+        <div class="border-t border-gray-200 dark:border-gray-600 pt-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Ask a Custom Question
+            </h3>
+
+            <form id="questionForm" class="space-y-4">
+                <div>
+                    <textarea id="questionInput" placeholder="Ask anything about {{ topic.title }}..."
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white resize-none"
+                        rows="3"></textarea>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        The AI has access to all course materials for this topic
+                    </div>
+                    <button type="submit"
+                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-paper-plane mr-2"></i>Ask AI
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Response Area -->
+        <div id="responseArea" class="hidden mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div class="flex items-start space-x-3">
+                <div
+                    class="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <div id="responseContent" class="text-gray-800 dark:text-gray-200"></div>
+                    <div class="mt-3 flex items-center justify-between">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                            <span id="responseTime"></span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="continueInChat()" class="text-blue-600 hover:text-blue-700 text-sm">
+                                <i class="fas fa-comments mr-1"></i>Continue in Chat
+                            </button>
+                            <button onclick="askAnother()" class="text-green-600 hover:text-green-700 text-sm">
+                                <i class="fas fa-plus mr-1"></i>Ask Another
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex justify-between">
+            <a href="{% url 'courses:topic_detail' topic.id %}"
+                class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Topic
+            </a>
+            <a href="{% url 'tutor:dashboard' %}" class="text-blue-600 hover:text-blue-700">
+                <i class="fas fa-robot mr-2"></i>AI Tutor Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentSessionId = {{ session.id }};
+
+    function askQuickQuestion(type) {
+        const questions = {
+            'explain': 'Please explain the topic "{{ topic.title }}" in simple terms.',
+            'summarize': 'Please summarize the key points of "{{ topic.title }}".',
+            'examples': 'Can you provide practical examples for "{{ topic.title }}"?',
+            'quiz': 'Can you ask me some questions to test my understanding of "{{ topic.title }}"?'
+        };
+
+        document.getElementById('questionInput').value = questions[type];
+        submitQuestion();
+    }
+
+    function submitQuestion() {
+        const question = document.getElementById('questionInput').value.trim();
+        if (!question) return;
+
+        // Show loading state
+        const responseArea = document.getElementById('responseArea');
+        const responseContent = document.getElementById('responseContent');
+
+        responseArea.classList.remove('hidden');
+        responseContent.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>AI is thinking...';
+
+        // Send request
+        fetch('{% url "tutor:topic_help" topic.id %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                question: question
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    responseContent.innerHTML = data.response.replace(/\n/g, '<br>');
+                    document.getElementById('responseTime').textContent = 'Just now';
+                    currentSessionId = data.session_id;
+                } else {
+                    responseContent.innerHTML = `<div class="text-red-600">Error: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                responseContent.innerHTML = '<div class="text-red-600">Sorry, there was a connection error. Please try again.</div>';
+                console.error('Error:', error);
+            });
+    }
+
+    function continueInChat() {
+        if (currentSessionId) {
+            window.location.href = `{% url 'tutor:chat_session' 0 %}`.replace('0', currentSessionId);
+        }
+    }
+
+    function askAnother() {
+        document.getElementById('questionInput').value = '';
+        document.getElementById('responseArea').classList.add('hidden');
+        document.getElementById('questionInput').focus();
+    }
+
+    // Handle form submission
+    document.getElementById('questionForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitQuestion();
+    });
+</script>
+
+{% csrf_token %}
+{% endblock %}

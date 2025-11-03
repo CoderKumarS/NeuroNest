@@ -245,8 +245,7 @@
                                 </p>
                                 {% elif activity.type == 'student_enrolled' %}
                                 <p class="text-sm text-gray-900 dark:text-white">
-                                    <span class="font-medium">{{ activity.student }}</span> enrolled in {{
-                                    activity.course }}
+                                    <span class="font-medium">{{ activity.student }}</span> enrolled in {{ activity.course }}
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ activity.date|timesince }} ago
@@ -305,8 +304,7 @@
                                 <i class="fas fa-book text-blue-600 dark:text-blue-400"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ course.title
-                                    }}</h4>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ course.title }}</h4>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                     by {{ course.instructor.username }}
                                 </p>
@@ -355,8 +353,7 @@
                                 <i class="fas fa-chalkboard-teacher text-green-600 dark:text-green-400"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ course.title
-                                    }}</h4>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ course.title }}</h4>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ course.enrollment_set.count }} student{{ course.enrollment_set.count|pluralize }}
                                 </p>

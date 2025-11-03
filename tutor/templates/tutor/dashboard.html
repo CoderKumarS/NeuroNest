@@ -1,0 +1,250 @@
+{% extends 'base/base.html' %}
+
+{% block title %}AI Tutor - Dashboard{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">🤖 AI Tutor Assistant</h1>
+            <p class="text-xl mb-8">Get instant help with your courses, ask questions, and understand concepts better
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'tutor:new_chat' %}"
+                    class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-comments mr-2"></i>Start New Chat
+                </a>
+                <a href="{% url 'tutor:chat_history' %}"
+                    class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                    <i class="fas fa-history mr-2"></i>Chat History
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Features Section -->
+    <div class="mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">What can I help you with?</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Ask Questions -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-question-circle text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Ask Questions</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Get instant answers about course content, concepts,
+                    and topics</p>
+            </div>
+
+            <!-- Summarize Content -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-file-alt text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Summarize Lectures</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Get concise summaries of course materials and topics
+                </p>
+            </div>
+
+            <!-- Explain Concepts -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                <div
+                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-lightbulb text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Explain Simply</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Break down complex concepts into easy-to-understand
+                    explanations</p>
+            </div>
+
+            <!-- Quiz Help -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                <div
+                    class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-graduation-cap text-orange-600 dark:text-orange-400 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Quiz Assistance</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Get hints and guidance for quiz questions without
+                    direct answers</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Chats -->
+    {% if recent_sessions %}
+    <div class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Recent Conversations</h2>
+            <a href="{% url 'tutor:chat_history' %}" class="text-blue-600 hover:text-blue-700 font-medium">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for session in recent_sessions %}
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                <div class="flex items-start justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ session.title }}</h3>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ session.updated_at|date:"M d" }}</span>
+                </div>
+
+                {% if session.course %}
+                <div class="flex items-center mb-3">
+                    <i class="fas fa-book text-blue-500 mr-2"></i>
+                    <span class="text-sm text-gray-600 dark:text-gray-300">{{ session.course.title }}</span>
+                </div>
+                {% endif %}
+
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ session.get_message_count }} message{{ session.get_message_count|pluralize }}
+                    </span>
+                    <a href="{% url 'tutor:chat_session' session.id %}"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        Continue
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Enrolled Courses -->
+    {% if enrolled_courses %}
+    <div class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Get Help with Your Courses</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for course in enrolled_courses %}
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-book text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ course.title }}</h3>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ course.get_category_display }}</span>
+                    </div>
+                </div>
+
+                <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">{{ course.description|truncatewords:15 }}</p>
+
+                <div class="flex gap-2">
+                    <button onclick="startCourseChat({{ course.id }}, '{{ course.title|escapejs }}')"
+                        class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        <i class="fas fa-comments mr-1"></i>Ask Questions
+                    </button>
+                    <button onclick="summarizeCourse({{ course.id }}, '{{ course.title|escapejs }}')"
+                        class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+                        <i class="fas fa-file-alt mr-1"></i>Summarize
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Usage Statistics -->
+    {% if daily_usage %}
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Today's Usage</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600">{{ daily_usage.requests_count }}</div>
+                <div class="text-sm text-gray-600 dark:text-gray-300">Questions Asked</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-green-600">{{ daily_usage.tokens_used }}</div>
+                <div class="text-sm text-gray-600 dark:text-gray-300">AI Tokens Used</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600">${{ daily_usage.estimated_cost|floatformat:4 }}</div>
+                <div class="text-sm text-gray-600 dark:text-gray-300">Estimated Cost</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function startCourseChat(courseId, courseTitle) {
+        // Create new chat session with course context
+        fetch('{% url "tutor:new_chat" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                course_id: courseId,
+                title: `Help with ${courseTitle}`
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = `{% url "tutor:chat_session" 0 %}`.replace('0', data.session_id);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function summarizeCourse(courseId, courseTitle) {
+        // Request course summary
+        fetch('{% url "tutor:summarize_content" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                content_type: 'course',
+                content_id: courseId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show summary in modal or redirect to chat
+                    showSummaryModal(data.title, data.summary);
+                } else {
+                    alert('Error generating summary: ' + data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function showSummaryModal(title, summary) {
+        // Create and show modal with summary
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-2xl max-h-96 overflow-y-auto m-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">${title}</h3>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${summary}</div>
+            <div class="mt-4 text-right">
+                <button onclick="this.closest('.fixed').remove()" 
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
+        document.body.appendChild(modal);
+    }
+</script>
+
+{% csrf_token %}
+{% endblock %}

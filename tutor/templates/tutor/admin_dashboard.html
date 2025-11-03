@@ -1,0 +1,287 @@
+{% extends 'base/base.html' %}
+
+{% block title %}AI Tutor Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    🛠️ AI Tutor Admin Dashboard
+                </h1>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Monitor AI tutor usage, performance, and system health
+                </p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'admin:index' %}"
+                    class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-cog mr-2"></i>Django Admin
+                </a>
+                <a href="{% url 'courses:course_list' %}"
+                    class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Courses
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Sessions -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-comments text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Sessions</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.total_sessions|default:0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div
+                    class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-circle text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Sessions</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.active_sessions|default:0 }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Messages -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div
+                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-message text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Messages</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.total_messages|default:0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Usage -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div
+                    class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-chart-line text-orange-600 dark:text-orange-400 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Today's Requests</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{
+                        stats.daily_usage.total_requests|default:0 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Details -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Token Usage -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-coins mr-2"></i>Token Usage Today
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600 dark:text-gray-400">Total Tokens Used:</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{
+                        stats.daily_usage.total_tokens|default:0 }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600 dark:text-gray-400">Estimated Cost:</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">${{
+                        stats.daily_usage.estimated_cost|default:"0.00" }}</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">45% of daily limit used</p>
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-heartbeat mr-2"></i>System Health
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600 dark:text-gray-400">AI Service Status:</span>
+                    <span
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        <i class="fas fa-circle mr-1 text-xs"></i>Online
+                    </span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600 dark:text-gray-400">Average Response Time:</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">1.2s</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600 dark:text-gray-400">Success Rate:</span>
+                    <span class="font-semibold text-green-600 dark:text-green-400">98.5%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600 dark:text-gray-400">Error Rate:</span>
+                    <span class="font-semibold text-red-600 dark:text-red-400">1.5%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <i class="fas fa-clock mr-2"></i>Recent Activity
+            </h3>
+            <button class="text-blue-600 hover:text-blue-700 text-sm">
+                <i class="fas fa-refresh mr-1"></i>Refresh
+            </button>
+        </div>
+
+        {% if recent_sessions %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            User
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Session Title
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Course
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Messages
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Last Activity
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Status
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+                    {% for session in recent_sessions %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-user text-blue-600 dark:text-blue-400 text-sm"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+                                    session.student.username }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm text-gray-900 dark:text-white">{{ session.title|truncatechars:30
+                                }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if session.course %}
+                            <span class="text-sm text-gray-600 dark:text-gray-300">{{
+                                session.course.title|truncatechars:20 }}</span>
+                            {% else %}
+                            <span class="text-sm text-gray-400">No course</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm text-gray-900 dark:text-white">{{ session.get_message_count }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm text-gray-600 dark:text-gray-300">{{ session.updated_at|timesince }}
+                                ago</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if session.is_active %}
+                            <span
+                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                Active
+                            </span>
+                            {% else %}
+                            <span
+                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+                                Inactive
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-inbox text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <p class="text-gray-500 dark:text-gray-400">No recent activity</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-cog text-3xl text-blue-600 dark:text-blue-400 mb-4"></i>
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">AI Configuration</h4>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">Manage AI models and settings</p>
+            <a href="{% url 'admin:tutor_aiconfiguration_changelist' %}"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Configure
+            </a>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-chart-bar text-3xl text-green-600 dark:text-green-400 mb-4"></i>
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Usage Analytics</h4>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">View detailed usage reports</p>
+            <a href="{% url 'admin:tutor_usagestatistics_changelist' %}"
+                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                View Reports
+            </a>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-comments text-3xl text-purple-600 dark:text-purple-400 mb-4"></i>
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Chat Sessions</h4>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">Manage all chat sessions</p>
+            <a href="{% url 'admin:tutor_chatsession_changelist' %}"
+                class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                Manage
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-refresh every 30 seconds
+    setInterval(function () {
+        if (document.visibilityState === 'visible') {
+            location.reload();
+        }
+    }, 30000);
+</script>
+{% endblock %}

@@ -117,8 +117,7 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600 dark:text-gray-300">Completed Courses</span>
-                        <span class="font-semibold text-gray-900 dark:text-white">{{ completed_courses|default:0
-                            }}</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ completed_courses|default:0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600 dark:text-gray-300">Quiz Attempts</span>
@@ -168,8 +167,7 @@
                                 <h3 class="font-semibold text-gray-900 dark:text-white">{{ enrollment.course.title }}
                                 </h3>
                                 <p class="text-sm text-gray-600 dark:text-gray-300">
-                                    by {{ enrollment.course.instructor.username }} • {{ enrollment.enrolled_at|date:"M
-                                    d, Y" }}
+                                    by {{ enrollment.course.instructor.username }} • {{ enrollment.enrolled_at|date:"M, d, Y" }}
                                 </p>
                             </div>
                         </div>

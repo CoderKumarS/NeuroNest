@@ -1,0 +1,192 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Chat History - AI Tutor{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    🤖 Chat History
+                </h1>
+                <p class="text-gray-600 dark:text-gray-300">
+                    View and manage your AI tutor conversations
+                </p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'tutor:new_chat' %}"
+                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>New Chat
+                </a>
+                <a href="{% url 'tutor:dashboard' %}"
+                    class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Sessions -->
+    {% if page_obj %}
+    <div class="space-y-4">
+        {% for session in page_obj %}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mr-3">
+                            {{ session.title }}
+                        </h3>
+                        {% if session.course %}
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            <i class="fas fa-book mr-1"></i>
+                            {{ session.course.title }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>{{ session.created_at|date:"M d, Y" }}</span>
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-clock mr-2"></i>
+                        <span>Last updated: {{ session.updated_at|date:"M d, Y H:i" }}</span>
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-comments mr-2"></i>
+                        <span>{{ session.get_message_count }} messages</span>
+                    </div>
+
+                    {% if session.get_last_message %}
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-3">
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            <strong>Last message:</strong>
+                            {{ session.get_last_message.content|truncatewords:20 }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center space-x-2 ml-4">
+                    <a href="{% url 'tutor:chat_session' session.id %}"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-comments mr-2"></i>Continue Chat
+                    </a>
+
+                    <form method="post" action="{% url 'tutor:delete_session' session.id %}" class="inline"
+                        onsubmit="return confirm('Are you sure you want to delete this chat session? This action cannot be undone.')">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Session Stats -->
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-robot mr-1"></i>
+                            Total Messages: {{ session.get_message_count }}
+                        </span>
+                        <span class="text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-clock mr-1"></i>
+                            Created: {{ session.created_at|timesince }} ago
+                        </span>
+                    </div>
+                    <div class="flex items-center">
+                        {% if session.is_active %}
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            <i class="fas fa-circle mr-1 text-xs"></i>Active
+                        </span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+                            <i class="fas fa-circle mr-1 text-xs"></i>Inactive
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex justify-center mt-8">
+        <nav class="flex items-center space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?page=1"
+                class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}"
+                class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <i class="fas fa-angle-left"></i>
+            </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}"
+                class="px-4 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                {{ num }}
+                </a>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"
+                    class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}"
+                    class="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+                {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- No Chat Sessions -->
+    <div class="text-center py-16">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12">
+            <i class="fas fa-comments text-6xl text-gray-300 dark:text-gray-600 mb-6"></i>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">No chat sessions yet</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">
+                Start your first conversation with the AI tutor to get help with your courses and learning materials.
+            </p>
+            <div class="space-x-4">
+                <a href="{% url 'tutor:new_chat' %}"
+                    class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Start Your First Chat
+                </a>
+                <a href="{% url 'tutor:dashboard' %}"
+                    class="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Auto-refresh page every 30 seconds to show updated timestamps
+    setTimeout(function () {
+        if (document.visibilityState === 'visible') {
+            location.reload();
+        }
+    }, 30000);
+</script>
+{% endblock %}

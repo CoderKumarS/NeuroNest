@@ -1,0 +1,88 @@
+{% extends 'base/base.html' %}
+
+{% block title %}AI Tutor Chat{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hide Django messages on chat page to prevent popups */
+    #messages-container {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            🤖 AI Tutor Chat - {{ session.title }}
+        </h1>
+
+        {% if session.course %}
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+            Course: {{ session.course.title }}
+        </p>
+        {% endif %}
+
+        <!-- Course Selector -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Select Course Context:
+            </label>
+            <select id="courseContext"
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
+                <option value="">No specific course</option>
+                {% for course in enrolled_courses %}
+                <option value="{{ course.id }}" {% if session.course and session.course.id == course.id %}selected{% endif %}>{{ course.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="messagesContainer"
+            class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 h-64 overflow-y-auto mb-4">
+            {% if not messages %}
+            <div class="text-gray-500 dark:text-gray-400 text-center py-8">
+                👋 Hi! I'm your AI tutor. Ask me anything about your courses!
+            </div>
+            {% endif %}
+
+            {% for message in messages %}
+            <div class="mb-4 {% if message.message_type == 'user' %}text-right{% endif %}">
+                <div
+                    class="inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg {% if message.message_type == 'user' %}bg-blue-600 text-white{% else %}bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200{% endif %}">
+                    <p>{{ message.content }}</p>
+                    <small class="text-xs opacity-70">{{ message.timestamp|date:"H:i" }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Input Form -->
+        <form id="messageForm" class="flex gap-2">
+            <input type="text" id="messageInput" placeholder="Ask me anything..."
+                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                Send
+            </button>
+        </form>
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'tutor:dashboard' %}" class="text-blue-600 hover:text-blue-700">
+                ← Back to AI Tutor Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Configuration Data -->
+<div id="chatConfig" data-session-id="{{ session.id }}" data-send-message-url="{% url 'tutor:send_message' %}"
+    style="display: none;"></div>
+
+<!-- Load Chat JavaScript -->
+{% load static %}
+<script src="{% static 'tutor/js/chat-simple-config.js' %}"></script>
+<script src="{% static 'tutor/js/chat.js' %}"></script>
+
+{% csrf_token %}
+{% endblock %}
