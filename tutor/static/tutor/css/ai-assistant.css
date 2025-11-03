@@ -1,0 +1,126 @@
+/* AI Assistant Widget Styles */
+
+/* Floating button animations */
+#ai-assistant-button {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+#ai-assistant-button:hover {
+    animation: none;
+    transform: scale(1.05);
+}
+
+/* Chat window animations */
+#ai-assistant-window {
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Message animations */
+.ai-message-enter {
+    animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Notification badge pulse */
+#ai-notification-badge {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Scrollbar styling for messages */
+#ai-messages-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+#ai-messages-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#ai-messages-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 2px;
+}
+
+#ai-messages-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Dark mode scrollbar */
+.dark #ai-messages-container::-webkit-scrollbar-thumb {
+    background: #4a5568;
+}
+
+.dark #ai-messages-container::-webkit-scrollbar-thumb:hover {
+    background: #2d3748;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+    #ai-assistant-window {
+        width: 100vw !important;
+        height: 100vh !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: 0 !important;
+        border-radius: 0 !important;
+    }
+
+    #ai-assistant-button {
+        bottom: 5rem !important;
+        right: 1rem !important;
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+/* Fix for bottom positioning */
+.bottom-28 {
+    bottom: 7rem;
+}

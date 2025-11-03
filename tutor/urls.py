@@ -23,4 +23,7 @@ urlpatterns = [
     
     # Admin/monitoring
     path('admin/', views.admin_dashboard, name='admin_dashboard'),
+    
+    # AI Assistant Widget
+    path('widget/new-session/', views.create_widget_session, name='create_widget_session'),
 ]

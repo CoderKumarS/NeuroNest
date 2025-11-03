@@ -1,0 +1,69 @@
+# Core Django Dependencies
+Django>=5.2.0,<6.0.0
+django-extensions>=3.2.0
+
+# Database
+# For PostgreSQL (uncomment if needed)
+# psycopg2-binary>=2.9.0
+
+# For MySQL (uncomment if needed)
+# mysqlclient>=2.1.0
+
+# Static Files & Media
+Pillow>=10.0.0
+whitenoise>=6.5.0
+
+# Environment Management
+python-decouple>=3.8
+python-dotenv>=1.0.0
+
+# API & Authentication
+djangorestframework>=3.14.0
+djangorestframework-simplejwt>=5.3.0
+
+# AI & Machine Learning
+openai>=1.0.0
+google-generativeai>=0.3.0
+
+# Optional AI Dependencies (uncomment if needed)
+# anthropic>=0.7.0
+# numpy>=1.21.0
+# scikit-learn>=1.0.0
+# sentence-transformers>=2.2.0
+
+# Development Dependencies (for development only)
+# Uncomment for development environment
+# django-debug-toolbar>=4.2.0
+# pytest>=7.4.0
+# pytest-django>=4.5.0
+# coverage>=7.3.0
+# black>=23.0.0
+# flake8>=6.0.0
+# isort>=5.12.0
+
+# Production Dependencies (uncomment for production)
+# gunicorn>=21.2.0
+# django-cors-headers>=4.3.0
+# django-storages>=1.14.0
+# boto3>=1.28.0  # For AWS S3 storage
+
+# Security (recommended for production)
+# django-security>=0.17.0
+# django-csp>=3.7.0
+
+# Monitoring & Logging (optional)
+# sentry-sdk>=1.32.0
+# django-extensions>=3.2.0
+
+# Email (optional)
+# django-ses>=3.5.0  # For AWS SES
+# sendgrid>=6.10.0   # For SendGrid
+
+# Caching (optional)
+# redis>=5.0.0
+# django-redis>=5.4.0
+
+# Task Queue (optional)
+# celery>=5.3.0
+# django-celery-beat>=2.5.0
+# django-celery-results>=2.5.0

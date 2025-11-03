@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.db.models import Count, Avg
 from courses.models import Course, Enrollment, Progress
 from django.contrib.auth import get_user_model
@@ -65,3 +66,55 @@ def home_view(request):
     }
     
     return render(request, 'base/index.html', context)
+
+
+def about_view(request):
+    """About page view"""
+    # Get platform statistics for the about page
+    total_students = User.objects.filter(role='student').count()
+    total_courses = Course.objects.count()
+    
+    # Calculate success rate
+    completed_courses_count = Progress.objects.filter(
+        completed_lessons__gte=1
+    ).values('student').distinct().count()
+    
+    success_rate = 0
+    if total_students > 0:
+        success_rate = int((completed_courses_count / total_students) * 100)
+    
+    context = {
+        'total_students': total_students,
+        'total_courses': total_courses,
+        'success_rate': success_rate,
+    }
+    
+    return render(request, 'base/about.html', context)
+
+
+def contact_view(request):
+    """Contact page view with form handling"""
+    if request.method == 'POST':
+        # Handle contact form submission
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        email = request.POST.get('email', '')
+        subject = request.POST.get('subject', '')
+        message = request.POST.get('message', '')
+        
+        # Here you can add logic to save the contact form data
+        # For now, we'll just return a success response
+        
+        # You could save to a ContactMessage model or send an email
+        # Example: ContactMessage.objects.create(...)
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # AJAX request
+            return JsonResponse({'success': True, 'message': 'Thank you for your message!'})
+        else:
+            # Regular form submission
+            from django.contrib import messages
+            messages.success(request, 'Thank you for your message! We\'ll get back to you soon.')
+            return redirect('contact')
+    
+    return render(request, 'base/contact.html')

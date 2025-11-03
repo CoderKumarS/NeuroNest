@@ -1,0 +1,82 @@
+<!-- AI Assistant Widget -->
+{% load static %}
+
+<!-- AI Assistant CSS -->
+<link rel="stylesheet" href="{% static 'tutor/css/ai-assistant.css' %}" ?>
+
+<!-- AI Assistant Floating Button -->
+<div id="ai-assistant-button"
+    class="fixed bottom-24 right-6 w-14 h-14 bg-gradient-to-br from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center justify-center cursor-pointer group"
+    onclick="toggleAIAssistant()" title="AI Tutor Assistant">
+    <i id="ai-assistant-icon" class="fas fa-robot text-xl group-hover:scale-110 transition-transform duration-200"></i>
+    <!-- Notification badge (optional) -->
+    <div id="ai-notification-badge"
+        class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hidden">
+        1
+    </div>
+</div>
+
+<!-- AI Assistant Chat Window -->
+<div id="ai-assistant-window"
+    class="fixed bottom-28 right-6 w-80 h-96 md:w-80 md:h-96 sm:w-full sm:h-full sm:bottom-0 sm:left-0 sm:right-0 sm:top-0 sm:rounded-none bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden z-50 flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-500 to-blue-600 text-white p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <i class="fas fa-robot text-sm"></i>
+            </div>
+            <div>
+                <h3 class="font-semibold text-sm">AI Tutor</h3>
+                <p class="text-xs opacity-90">Online</p>
+            </div>
+        </div>
+        <button onclick="toggleAIAssistant()"
+            class="text-white hover:bg-white hover:bg-opacity-20 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+    </div>
+
+    <!-- Messages Area -->
+    <div id="ai-messages-container" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
+        <!-- Welcome Message -->
+        <div class="flex items-start space-x-2">
+            <div
+                class="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-robot text-white text-xs"></i>
+            </div>
+            <div class="bg-white dark:bg-gray-700 rounded-lg p-3 max-w-xs shadow-sm">
+                <p class="text-sm text-gray-800 dark:text-gray-200">
+                    👋 Hi! I'm your AI tutor. How can I help you today?
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="border-t border-gray-200 dark:border-gray-600 p-3 bg-white dark:bg-gray-800">
+        <form id="ai-assistant-form" class="flex space-x-2">
+            <input type="text" id="ai-assistant-input" placeholder="Ask me anything..."
+                class="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                maxlength="500">
+            <button type="submit" id="ai-assistant-send"
+                class="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-paper-plane text-sm"></i>
+            </button>
+        </form>
+        <div class="mt-2 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+            <span id="ai-char-count">0/500</span>
+            <span>Press Enter to send</span>
+        </div>
+    </div>
+</div>
+
+<!-- AI Assistant Overlay (for mobile) -->
+<div id="ai-assistant-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30" onclick="toggleAIAssistant()">
+</div>
+
+<!-- AI Assistant JavaScript -->
+<script src="{% static 'tutor/js/ai-assistant-widget.js' %}"></script>
+
+<!-- CSRF Token for AJAX requests -->
+{% csrf_token %}

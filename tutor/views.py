@@ -476,3 +476,21 @@ def admin_dashboard(request):
     }
     
     return render(request, 'tutor/admin_dashboard.html', context)
+
+
+@login_required
+def create_widget_session(request):
+    """Create a new chat session for the AI assistant widget"""
+    if request.user.role != 'student':
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    # Create a new session for the widget
+    session = ChatSession.objects.create(
+        student=request.user,
+        title="AI Assistant Chat"
+    )
+    
+    return JsonResponse({
+        'success': True,
+        'session_id': session.id
+    })

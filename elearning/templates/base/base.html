@@ -94,6 +94,33 @@
             overflow-y: auto;
             word-wrap: break-word;
         }
+
+        /* Navigation active state styling */
+        .nav-active {
+            position: relative;
+        }
+
+        .nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 1px;
+        }
+
+        /* Mobile navigation active state */
+        .mobile-nav-active {
+            background: linear-gradient(135deg, #eff6ff, #f3e8ff);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .dark .mobile-nav-active {
+            background: linear-gradient(135deg, #1e3a8a, #581c87);
+            border-left: 4px solid #60a5fa;
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -117,21 +144,28 @@
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="{% url 'home' %}"
-                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Home</a>
+                        class="{% if request.resolver_match.url_name == 'home' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">Home</a>
                     <a href="{% url 'courses:course_list' %}"
-                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Courses</a>
+                        class="{% if request.resolver_match.namespace == 'courses' and request.resolver_match.url_name == 'course_list' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">Courses</a>
                     <a href="{% url 'courses:course_explorer' %}"
-                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Explore</a>
+                        class="{% if request.resolver_match.namespace == 'courses' and request.resolver_match.url_name == 'course_explorer' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">Explore</a>
                     {% if user.is_authenticated and user.role == 'student' %}
                     <a href="{% url 'tutor:dashboard' %}"
-                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                        class="{% if request.resolver_match.namespace == 'tutor' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">
                         <i class="fas fa-robot mr-1"></i>AI Tutor
                     </a>
                     {% endif %}
+                    {% if request.resolver_match.url_name == 'home' %}
                     <a href="#about"
                         class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">About</a>
                     <a href="#contact"
                         class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Contact</a>
+                    {% else %}
+                    <a href="{% url 'about' %}"
+                        class="{% if request.resolver_match.url_name == 'about' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">About</a>
+                    <a href="{% url 'contact' %}"
+                        class="{% if request.resolver_match.url_name == 'contact' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">Contact</a>
+                    {% endif %}
 
                     {% if user.is_authenticated %}
                     <div class="flex items-center space-x-4">
@@ -209,19 +243,28 @@
             <div id="mobile-menu" class="md:hidden hidden">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2">
                     <a href="{% url 'home' %}"
-                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Home</a>
+                        class="{% if request.resolver_match.url_name == 'home' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">Home</a>
                     <a href="{% url 'courses:course_list' %}"
-                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Courses</a>
+                        class="{% if request.resolver_match.namespace == 'courses' and request.resolver_match.url_name == 'course_list' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">Courses</a>
+                    <a href="{% url 'courses:course_explorer' %}"
+                        class="{% if request.resolver_match.namespace == 'courses' and request.resolver_match.url_name == 'course_explorer' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">Explore</a>
                     {% if user.is_authenticated and user.role == 'student' %}
                     <a href="{% url 'tutor:dashboard' %}"
-                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                        class="{% if request.resolver_match.namespace == 'tutor' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">
                         <i class="fas fa-robot mr-2"></i>AI Tutor
                     </a>
                     {% endif %}
+                    {% if request.resolver_match.url_name == 'home' %}
                     <a href="#about"
-                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">About</a>
+                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors">About</a>
                     <a href="#contact"
-                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Contact</a>
+                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors">Contact</a>
+                    {% else %}
+                    <a href="{% url 'about' %}"
+                        class="{% if request.resolver_match.url_name == 'about' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">About</a>
+                    <a href="{% url 'contact' %}"
+                        class="{% if request.resolver_match.url_name == 'contact' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">Contact</a>
+                    {% endif %}
 
                     {% if user.is_authenticated %}
                     <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
@@ -344,8 +387,10 @@
                         <li><a href="{% url 'home' %}" class="text-gray-300 hover:text-white transition-colors">Home</a>
                         </li>
                         <li><a href="#courses" class="text-gray-300 hover:text-white transition-colors">Courses</a></li>
-                        <li><a href="#about" class="text-gray-300 hover:text-white transition-colors">About Us</a></li>
-                        <li><a href="#contact" class="text-gray-300 hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-300 hover:text-white transition-colors">About
+                                Us</a></li>
+                        <li><a href="{% url 'contact' %}"
+                                class="text-gray-300 hover:text-white transition-colors">Contact</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Terms of Service</a>
                         </li>
@@ -378,6 +423,11 @@
         </div>
     </footer>
 
+    <!-- AI Assistant Widget (only for authenticated students) -->
+    {% if user.is_authenticated and user.role == 'student' %}
+    {% include 'tutor/ai_assistant_widget.html' %}
+    {% endif %}
+
     <!-- Dark/Light Mode Toggle Button -->
     <button id="theme-toggle"
         class="fixed bottom-6 right-6 w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 flex items-center justify-center"
@@ -386,6 +436,8 @@
     </button>
 
     <!-- JavaScript -->
+    {% load static %}
+    <script src="{% static 'elearning/js/main.js' %}"></script>
     <script>
         // Mobile menu toggle
         document.getElementById('mobile-menu-button').addEventListener('click', function () {

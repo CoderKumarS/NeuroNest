@@ -1,0 +1,258 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Contact Us - NeuroNest{% endblock %}
+
+{% block content %}
+<!-- Contact Hero Section -->
+<section class="gradient-bg text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                Contact <span class="text-yellow-300">Us</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="py-20 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Contact Form -->
+            <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send us a Message</h3>
+                <form method="POST" action="{% url 'contact' %}" class="space-y-6" id="contact-form">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="first-name"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First
+                                Name</label>
+                            <input type="text" id="first-name" name="first_name" required
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                placeholder="Enter your first name">
+                        </div>
+                        <div>
+                            <label for="last-name"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last
+                                Name</label>
+                            <input type="text" id="last-name" name="last_name" required
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                placeholder="Enter your last name">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="email"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                        <input type="email" id="email" name="email" required
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter your email address">
+                    </div>
+                    <div>
+                        <label for="subject"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
+                        <select id="subject" name="subject" required
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                            <option value="">Select a subject</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="courses">Course Information</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="billing">Billing & Payments</option>
+                            <option value="partnership">Partnership Opportunities</option>
+                            <option value="feedback">Feedback & Suggestions</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="message"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
+                        <textarea id="message" name="message" rows="6" required
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter your message here..."></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors font-semibold">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Contact Information</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Email</h4>
+                                <p class="text-gray-600 dark:text-gray-300">info@neuronest.com</p>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">We'll respond within 24 hours</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-phone text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Phone</h4>
+                                <p class="text-gray-600 dark:text-gray-300">+1 (555) 123-4567</p>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">Mon-Fri, 9AM-6PM EST</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Address</h4>
+                                <p class="text-gray-600 dark:text-gray-300">123 Education Street</p>
+                                <p class="text-gray-600 dark:text-gray-300">Learning City, LC 12345</p>
+                                <p class="text-gray-600 dark:text-gray-300">United States</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-clock text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Business Hours</h4>
+                                <p class="text-gray-600 dark:text-gray-300">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                                <p class="text-gray-600 dark:text-gray-300">Saturday: 10:00 AM - 4:00 PM</p>
+                                <p class="text-gray-600 dark:text-gray-300">Sunday: Closed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+                            class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="Facebook">
+                            <i class="fab fa-facebook-f text-lg"></i>
+                        </a>
+                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+                            class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="Twitter">
+                            <i class="fab fa-twitter text-lg"></i>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                            class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in text-lg"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+                            class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="Instagram">
+                            <i class="fab fa-instagram text-lg"></i>
+                        </a>
+                        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+                            class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            aria-label="YouTube">
+                            <i class="fab fa-youtube text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- FAQ Link -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Frequently Asked Questions</h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Looking for quick answers? Check out our FAQ section for common questions about courses,
+                        enrollment, and platform features.
+                    </p>
+                    <a href="#" class="text-primary-600 hover:text-primary-700 font-semibold">
+                        View FAQ →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section (Optional) -->
+<section class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Visit Our Office</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300">
+                We'd love to meet you in person. Drop by our office during business hours.
+            </p>
+        </div>
+
+        <!-- Placeholder for map - you can integrate Google Maps or other mapping service -->
+        <div class="bg-gray-300 dark:bg-gray-600 h-64 rounded-xl flex items-center justify-center">
+            <div class="text-center">
+                <i class="fas fa-map-marker-alt text-4xl text-gray-500 dark:text-gray-400 mb-4"></i>
+                <p class="text-gray-600 dark:text-gray-300">Interactive map coming soon</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Contact form handling
+    document.getElementById('contact-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
+                    this.reset();
+                } else {
+                    showNotification(data.error || 'Failed to send message. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Connection error. Please try again later.', 'error');
+            })
+            .finally(() => {
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            });
+    });
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-600 text-white' :
+                type === 'error' ? 'bg-red-600 text-white' :
+                    'bg-blue-600 text-white'
+            }`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+</script>
+{% endblock %}
