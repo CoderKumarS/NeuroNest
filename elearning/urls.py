@@ -21,10 +21,15 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
+    # Admin should be first to avoid conflicts
+    path('admin/', admin.site.urls),
+    
+    # Main site URLs
     path('', views.home_view, name='home'),
     path('about/', views.about_view, name='about'),
     path('contact/', views.contact_view, name='contact'),
-    path('admin/', admin.site.urls),
+    
+    # App URLs
     path('users/', include('users.urls', namespace='users')),
     path('courses/', include('courses.urls', namespace='courses')),
     path('tutor/', include('tutor.urls', namespace='tutor')),

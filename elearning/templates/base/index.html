@@ -4,38 +4,40 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="gradient-bg text-white py-20">
+<section class="bg-gradient-to-r from-purple-600 to-violet-600 text-white py-16 sm:py-20 md:py-24 lg:py-32">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <h1 class="text-4xl md:text-6xl font-bold mb-6">
-                Learn Without <span class="text-yellow-300">Limits</span>
+            <h1
+                class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight px-2">
+                Learn Without Limits
             </h1>
-            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+            <p
+                class="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 max-w-3xl mx-auto text-white/90 leading-relaxed px-4">
                 Discover thousands of courses, master new skills, and advance your career with our world-class online
                 learning platform.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
                 {% if not is_authenticated %}
                 <a href="{% url 'users:register' %}"
-                    class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
-                    Start Learning Today
+                    class="bg-white text-purple-600 px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center text-sm sm:text-base active:scale-95">
+                    Enroll Now
                 </a>
                 {% else %}
                 {% if user_role == 'student' %}
                 <a href="{% url 'courses:my_courses' %}"
-                    class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+                    class="bg-white text-purple-600 px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center text-sm sm:text-base active:scale-95">
                     Continue Learning
                 </a>
                 {% elif user_role == 'instructor' %}
                 <a href="{% url 'users:dashboard' %}"
-                    class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+                    class="bg-white text-purple-600 px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center text-sm sm:text-base active:scale-95">
                     Instructor Dashboard
                 </a>
                 {% endif %}
                 {% endif %}
                 <a href="{% url 'courses:course_list' %}"
-                    class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
-                    Browse Courses
+                    class="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl text-center text-sm sm:text-base active:scale-95">
+                    Learn More
                 </a>
             </div>
         </div>
@@ -43,64 +45,61 @@
 </section>
 
 <!-- Popular Courses Section -->
-<section id="courses" class="py-20 bg-gray-50 dark:bg-gray-800">
+<section id="courses" class="py-12 sm:py-16 md:py-20 bg-gray-50 dark:bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        <div class="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 px-2">
                 Popular Courses
             </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
                 Explore our most popular courses and start your learning journey today
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for course in popular_courses %}
             <div
-                class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                <!-- Course Image with dynamic gradient -->
+                class="bg-white dark:bg-gray-700 rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <!-- Course Image with varied gradient backgrounds -->
                 <div
-                    class="h-48 bg-gradient-to-br {% cycle 'from-blue-500 to-purple-600' 'from-green-500 to-teal-600' 'from-red-500 to-pink-600' 'from-yellow-500 to-orange-600' 'from-purple-500 to-indigo-600' 'from-indigo-500 to-blue-600' %} flex items-center justify-center relative">
-                    <i class="fas fa-book text-white text-4xl"></i>
+                    class="h-48 bg-gradient-to-br {% cycle 'from-blue-500 to-cyan-600' 'from-green-500 to-emerald-600' 'from-pink-500 to-rose-600' 'from-orange-500 to-amber-600' 'from-purple-500 to-violet-600' 'from-cyan-500 to-blue-600' %} flex items-center justify-center relative">
+                    <i class="fas fa-book text-white text-5xl opacity-90"></i>
 
                     <!-- Enrollment count badge -->
                     {% if course.enrollment_count > 0 %}
                     <div
-                        class="absolute top-4 right-4 bg-white dark:bg-gray-800 rounded-full px-3 py-1 text-sm font-semibold">
-                        {{ course.enrollment_count }} enrolled
+                        class="absolute top-4 right-4 bg-white/95 dark:bg-gray-800/95 rounded-full px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-200 shadow-md">
+                        <i class="fas fa-users mr-1"></i>{{ course.enrollment_count }}
                     </div>
                     {% endif %}
                 </div>
 
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ course.title }}</h3>
-                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                <div class="p-4 sm:p-6">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">{{ course.title }}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-sm">
                         {{ course.description|truncatewords:15 }}
                     </p>
 
                     <!-- Course Info -->
-                    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-user mr-1"></i>
-                            <span>{{ course.instructor.username }}</span>
+                    <div
+                        class="flex items-center justify-between text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        <div class="flex items-center min-w-0 flex-1 mr-2">
+                            <i class="fas fa-user mr-1.5 flex-shrink-0"></i>
+                            <span class="truncate">{{ course.instructor.username }}</span>
                         </div>
                         {% if course.avg_rating %}
-                        <div class="flex items-center">
+                        <div class="flex items-center flex-shrink-0">
                             <i class="fas fa-star text-yellow-400 mr-1"></i>
-                            <span>{{ course.avg_rating|floatformat:1 }}</span>
+                            <span class="font-medium">{{ course.avg_rating|floatformat:1 }}</span>
                         </div>
                         {% endif %}
                     </div>
 
-                    <div class="flex items-center justify-between">
-                        <span class="text-lg font-bold text-primary-600">
-                            Free Course
-                        </span>
-                        <a href="{% url 'courses:course_detail' course.id %}"
-                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
-                            View Course
-                        </a>
-                    </div>
+                    <a href="{% url 'courses:course_detail' course.id %}"
+                        class="block w-full text-center bg-purple-600 text-white px-4 py-2.5 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-md font-medium text-sm sm:text-base active:bg-purple-800">
+                        View Details
+                    </a>
                 </div>
             </div>
             {% empty %}
@@ -115,7 +114,7 @@
                     We're working on adding amazing courses. Check back soon!
                 </p>
                 <a href="{% url 'courses:course_list' %}"
-                    class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors">
+                    class="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-md hover:shadow-lg">
                     Explore All Courses
                 </a>
             </div>
@@ -124,7 +123,7 @@
 
         <div class="text-center mt-12">
             <a href="{% url 'courses:course_list' %}"
-                class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors">
+                class="inline-block bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-md hover:shadow-lg font-medium">
                 View All Courses
             </a>
         </div>
@@ -132,40 +131,39 @@
 </section>
 
 <!-- Testimonials Section -->
-<section class="py-20 bg-white dark:bg-gray-900">
+<section class="py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        <div class="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 px-2">
                 What Our Students Say
             </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
                 Don't just take our word for it. Here's what our students have to say about their learning experience.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for testimonial in testimonials %}
-            <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
-                <div class="flex items-center mb-4">
-                    <div
-                        class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold">
-                        {{ testimonial.initials }}
-                    </div>
-                    <div class="ml-4">
-                        <h4 class="font-semibold text-gray-900 dark:text-white">{{ testimonial.name }}</h4>
-                        <p class="text-gray-600 dark:text-gray-300">{{ testimonial.role }}</p>
-                    </div>
+            <div
+                class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex text-yellow-400 mb-3 sm:mb-4">
+                    {% for i in "12345"|make_list %}
+                    <i class="fas fa-star text-base sm:text-lg"></i>
+                    {% endfor %}
                 </div>
-                <p class="text-gray-700 dark:text-gray-300">
+                <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-4 sm:mb-6 leading-relaxed">
                     "{{ testimonial.content }}"
                 </p>
-                <div class="flex text-yellow-400 mt-4">
-                    {% for i in "12345"|make_list %}
-                    {% if forloop.counter <= testimonial.rating %} <i class="fas fa-star"></i>
-                        {% else %}
-                        <i class="far fa-star"></i>
-                        {% endif %}
-                        {% endfor %}
+                <div class="flex items-center">
+                    <div
+                        class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg flex-shrink-0">
+                        {{ testimonial.initials }}
+                    </div>
+                    <div class="ml-3 sm:ml-4 min-w-0">
+                        <h4 class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">{{ testimonial.name }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">{{ testimonial.role }}
+                        </p>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -174,73 +172,98 @@
 </section>
 
 <!-- About Section -->
-<section id="about" class="py-20 bg-gray-50 dark:bg-gray-800">
+<section id="about" class="py-12 sm:py-16 md:py-20 bg-gray-50 dark:bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                    Why Choose NeuroNest?
-                </h2>
-                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
-                    We're committed to providing the best online learning experience with expert instructors,
-                    comprehensive curriculum, and a supportive community.
-                </p>
+        <div class="text-center mb-8 sm:mb-10 md:mb-12">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 px-2">
+                Why Choose NeuroNest?
+            </h2>
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
+                We're committed to providing the best online learning experience with expert instructors,
+                comprehensive curriculum, and a supportive community.
+            </p>
+        </div>
 
-                <div class="space-y-6">
-                    <div class="flex items-start">
-                        <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-4 mt-1">
-                            <i class="fas fa-check text-white text-sm"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Expert Instructors</h3>
-                            <p class="text-gray-600 dark:text-gray-300">Learn from industry professionals with years of
-                                experience</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start">
-                        <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-4 mt-1">
-                            <i class="fas fa-check text-white text-sm"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Flexible Learning</h3>
-                            <p class="text-gray-600 dark:text-gray-300">Study at your own pace with lifetime access to
-                                course materials</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start">
-                        <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-4 mt-1">
-                            <i class="fas fa-check text-white text-sm"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Certificates</h3>
-                            <p class="text-gray-600 dark:text-gray-300">Earn industry-recognized certificates upon
-                                course completion</p>
-                        </div>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-12">
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                <div
+                    class="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-4 sm:p-6 text-white text-center shadow-lg">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">2k+</div>
+                    <div class="text-purple-100 font-medium text-xs sm:text-sm md:text-base">Students</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-4 sm:p-6 text-white text-center shadow-lg">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">{{ total_courses|default:"7" }}+</div>
+                    <div class="text-purple-100 font-medium text-xs sm:text-sm md:text-base">Courses</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-4 sm:p-6 text-white text-center shadow-lg">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">100%</div>
+                    <div class="text-purple-100 font-medium text-xs sm:text-sm md:text-base">Success Rate</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-4 sm:p-6 text-white text-center shadow-lg">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">24/7</div>
+                    <div class="text-purple-100 font-medium text-xs sm:text-sm md:text-base">Support</div>
                 </div>
             </div>
 
-            <div class="relative">
-                <div class="bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl p-8 text-white">
-                    <div class="grid grid-cols-2 gap-8 text-center">
-                        <div>
-                            <div class="text-3xl font-bold mb-2">{{ total_students|default:"0" }}+</div>
-                            <div class="text-primary-100">Students</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold mb-2">{{ total_courses|default:"0" }}+</div>
-                            <div class="text-primary-100">Courses</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold mb-2">{{ success_rate|default:"95" }}%</div>
-                            <div class="text-primary-100">Success Rate</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold mb-2">24/7</div>
-                            <div class="text-primary-100">Support</div>
-                        </div>
+            <!-- Benefits List -->
+            <div class="space-y-4 sm:space-y-5">
+                <div class="flex items-start">
+                    <div
+                        class="w-7 h-7 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center mr-3 sm:mr-4 mt-1 flex-shrink-0">
+                        <i class="fas fa-check text-white text-xs sm:text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 text-base sm:text-lg">Expert
+                            Instructors</h3>
+                        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Learn from industry
+                            professionals with years of
+                            experience</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div
+                        class="w-7 h-7 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center mr-3 sm:mr-4 mt-1 flex-shrink-0">
+                        <i class="fas fa-check text-white text-xs sm:text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 text-base sm:text-lg">
+                            Flexible Learning</h3>
+                        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Study at your own pace with
+                            lifetime access to
+                            course materials</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div
+                        class="w-7 h-7 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center mr-3 sm:mr-4 mt-1 flex-shrink-0">
+                        <i class="fas fa-check text-white text-xs sm:text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 text-base sm:text-lg">
+                            Certificates</h3>
+                        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Earn industry-recognized
+                            certificates upon
+                            course completion</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div
+                        class="w-7 h-7 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center mr-3 sm:mr-4 mt-1 flex-shrink-0">
+                        <i class="fas fa-check text-white text-xs sm:text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 text-base sm:text-lg">
+                            Community Support</h3>
+                        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Join a vibrant community of
+                            learners and get help
+                            when you need it</p>
                     </div>
                 </div>
             </div>
@@ -249,65 +272,55 @@
 </section>
 
 <!-- Contact Section -->
-<section id="contact" class="py-20 bg-white dark:bg-gray-900">
+<section id="contact" class="py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        <div class="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 px-2">
                 Get In Touch
             </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
                 Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12">
             <!-- Contact Form -->
-            <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl">
-                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send us a Message</h3>
-                <form method="POST" action="#" class="space-y-6">
+            <div class="bg-gray-50 dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-sm">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Send us a Message
+                </h3>
+                <form method="POST" action="#" class="space-y-4 sm:space-y-5">
                     {% csrf_token %}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="first-name"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First
-                                Name</label>
-                            <input type="text" id="first-name" name="first_name" required
-                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                placeholder="Enter your first name">
-                        </div>
-                        <div>
-                            <label for="last-name"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last
-                                Name</label>
-                            <input type="text" id="last-name" name="last_name" required
-                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                placeholder="Enter your last name">
-                        </div>
+                    <div>
+                        <label for="name"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Name</label>
+                        <input type="text" id="name" name="name" required
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-all duration-300"
+                            placeholder="Enter your name">
                     </div>
                     <div>
                         <label for="email"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                         <input type="email" id="email" name="email" required
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-all duration-300"
                             placeholder="Enter your email address">
                     </div>
                     <div>
                         <label for="subject"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
                         <input type="text" id="subject" name="subject" required
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-all duration-300"
                             placeholder="Enter the subject">
                     </div>
                     <div>
                         <label for="message"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
-                        <textarea id="message" name="message" rows="4" required
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        <textarea id="message" name="message" rows="5" required
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-all duration-300 resize-none"
                             placeholder="Enter your message"></textarea>
                     </div>
                     <button type="submit"
-                        class="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors">
-                        Send Message
+                        class="w-full bg-purple-600 text-white py-3 sm:py-3.5 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-md hover:shadow-xl font-medium transform hover:-translate-y-0.5 text-sm sm:text-base active:scale-95">
+                        <i class="fas fa-paper-plane mr-2"></i>Send Message
                     </button>
                 </form>
             </div>
@@ -316,35 +329,26 @@
             <div class="space-y-8">
                 <div>
                     <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Contact Information</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                    <div class="space-y-5">
+                        <div class="flex items-start">
+                            <div
+                                class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
                                 <i class="fas fa-envelope text-white"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-900 dark:text-white">Email</h4>
-                                <p class="text-gray-600 dark:text-gray-300">info@NeuroNest.com</p>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Email</h4>
+                                <p class="text-gray-600 dark:text-gray-300">info@neuronest.com</p>
                             </div>
                         </div>
 
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                        <div class="flex items-start">
+                            <div
+                                class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
                                 <i class="fas fa-phone text-white"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-900 dark:text-white">Phone</h4>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Phone</h4>
                                 <p class="text-gray-600 dark:text-gray-300">+1 (555) 123-4567</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
-                                <i class="fas fa-map-marker-alt text-white"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900 dark:text-white">Address</h4>
-                                <p class="text-gray-600 dark:text-gray-300">123 Education St, Learning City, LC 12345
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -352,25 +356,25 @@
 
                 <!-- Social Media -->
                 <div>
-                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Follow Us</h4>
-                    <div class="flex space-x-4">
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Follow Us</h4>
+                    <div class="flex space-x-3">
                         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-                            class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            class="w-11 h-11 bg-purple-600 rounded-lg flex items-center justify-center text-white hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-lg transform hover:scale-110"
                             aria-label="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                         <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-                            class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            class="w-11 h-11 bg-purple-600 rounded-lg flex items-center justify-center text-white hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-lg transform hover:scale-110"
                             aria-label="Twitter">
                             <i class="fab fa-twitter"></i>
                         </a>
                         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-                            class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            class="w-11 h-11 bg-purple-600 rounded-lg flex items-center justify-center text-white hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-lg transform hover:scale-110"
                             aria-label="LinkedIn">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
                         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-                            class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+                            class="w-11 h-11 bg-purple-600 rounded-lg flex items-center justify-center text-white hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-lg transform hover:scale-110"
                             aria-label="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>

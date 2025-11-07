@@ -3,8 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description"
+        content="NeuroNest - Online learning platform with AI-powered tutoring and expert-led courses">
+    <meta name="theme-color" content="#7c3aed">
     <title>{% block title %}E-Learning Platform{% endblock %}</title>
+
+    <!-- Preconnect to CDN for better performance -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -39,6 +47,10 @@
 
     <!-- Alpine.js for dropdown functionality -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Custom CSS for animations and gradients -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'elearning/css/custom.css' %}">
 
     <!-- Custom CSS -->
     <style>
@@ -95,31 +107,55 @@
             word-wrap: break-word;
         }
 
-        /* Navigation active state styling */
-        .nav-active {
-            position: relative;
-        }
-
-        .nav-active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            border-radius: 1px;
-        }
-
         /* Mobile navigation active state */
         .mobile-nav-active {
-            background: linear-gradient(135deg, #eff6ff, #f3e8ff);
-            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+            border-left: 4px solid #7c3aed;
         }
 
         .dark .mobile-nav-active {
-            background: linear-gradient(135deg, #1e3a8a, #581c87);
-            border-left: 4px solid #60a5fa;
+            background: linear-gradient(135deg, #581c87, #6d28d9);
+            border-left: 4px solid #a78bfa;
+        }
+
+        /* Navbar shadow */
+        nav {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* Touch-friendly minimum sizes for mobile */
+        @media (max-width: 768px) {
+
+            button,
+            a {
+                min-height: 44px;
+                /* iOS recommended touch target size */
+            }
+
+            /* Ensure mobile menu items are touch-friendly */
+            #mobile-menu a {
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        /* Prevent text selection on buttons for better mobile UX */
+        button {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* Smooth scrolling for the entire page */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Improve readability on small screens */
+        @media (max-width: 640px) {
+            body {
+                font-size: 14px;
+            }
         }
     </style>
 
@@ -127,171 +163,141 @@
 </head>
 
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content"
+        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-lg focus:shadow-lg">
+        Skip to main content
+    </a>
+
     <!-- Navigation -->
-    <nav class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50 transition-colors duration-300">
+    <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{% url 'home' %}" class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                        <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
                             <i class="fas fa-graduation-cap text-white text-lg"></i>
                         </div>
                         <span class="text-xl font-bold text-gray-900 dark:text-white">NeuroNest</span>
                     </a>
                 </div>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
+                <!-- Desktop Navigation - Left aligned after logo -->
+                <div class="hidden md:flex items-center space-x-8 ml-12">
                     <a href="{% url 'home' %}"
-                        class="{% if request.resolver_match.url_name == 'home' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">Home</a>
+                        class="{% if request.resolver_match.url_name == 'home' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">Home</a>
                     <a href="{% url 'courses:course_list' %}"
-                        class="{% if request.resolver_match.namespace == 'courses' and request.resolver_match.url_name == 'course_list' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">Courses</a>
-                    <a href="{% url 'courses:course_explorer' %}"
-                        class="{% if request.resolver_match.namespace == 'courses' and request.resolver_match.url_name == 'course_explorer' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">Explore</a>
+                        class="{% if request.resolver_match.namespace == 'courses' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">Courses</a>
+                    <a href="{% url 'courses:course_list' %}"
+                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 text-sm">Explore</a>
                     {% if user.is_authenticated and user.role == 'student' %}
                     <a href="{% url 'tutor:dashboard' %}"
-                        class="{% if request.resolver_match.namespace == 'tutor' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">
-                        <i class="fas fa-robot mr-1"></i>AI Tutor
-                    </a>
+                        class="{% if request.resolver_match.namespace == 'tutor' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">AI
+                        Tutor</a>
                     {% endif %}
-                    {% if request.resolver_match.url_name == 'home' %}
-                    <a href="#about"
-                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">About</a>
-                    <a href="#contact"
-                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Contact</a>
-                    {% else %}
                     <a href="{% url 'about' %}"
-                        class="{% if request.resolver_match.url_name == 'about' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">About</a>
+                        class="{% if request.resolver_match.url_name == 'about' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">About</a>
                     <a href="{% url 'contact' %}"
-                        class="{% if request.resolver_match.url_name == 'contact' %}text-primary-600 dark:text-primary-400 font-semibold border-b-2 border-primary-600 dark:border-primary-400 pb-1{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400{% endif %} transition-colors">Contact</a>
-                    {% endif %}
+                        class="{% if request.resolver_match.url_name == 'contact' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">Contact</a>
+                </div>
 
+                <!-- Right Section - Icons only -->
+                <div class="hidden md:flex items-center space-x-3">
                     {% if user.is_authenticated %}
-                    <div class="flex items-center space-x-4">
-                        <!-- User Dropdown -->
-                        <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" title="Toggle user menu"
-                                class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                                <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-white text-sm"></i>
-                                </div>
-                            </button>
+                    <!-- Notification Bell -->
+                    <button
+                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                        title="Notifications" aria-label="Notifications">
+                        <i class="fas fa-bell text-lg"></i>
+                    </button>
 
-                            <!-- Dropdown Menu -->
-                            <div x-show="open" @click.away="open = false"
-                                x-transition:enter="transition ease-out duration-200"
-                                x-transition:enter-start="opacity-0 scale-95"
-                                x-transition:enter-end="opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-150"
-                                x-transition:leave-start="opacity-100 scale-100"
-                                x-transition:leave-end="opacity-0 scale-95"
-                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
-
-                                <a href="{% url 'users:dashboard' %}"
-                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                    <i class="fas fa-tachometer-alt mr-3 text-primary-600"></i>
-                                    Dashboard
-                                </a>
-
-                                {% if user.role == 'student' %}
-                                <a href="{% url 'courses:my_courses' %}"
-                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                    <i class="fas fa-book mr-3 text-blue-600"></i>
-                                    My Courses
-                                </a>
-                                {% elif user.role == 'instructor' %}
-                                <a href="{% url 'courses:create_course' %}"
-                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                    <i class="fas fa-plus mr-3 text-green-600"></i>
-                                    Create Course
-                                </a>
-                                {% endif %}
-
-                                <div class="border-t border-gray-200 dark:border-gray-600 my-1"></div>
-
-                                <a href="{% url 'users:logout' %}"
-                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-                                    <i class="fas fa-sign-out-alt mr-3 text-red-600"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- User Avatar -->
+                    <a href="{% url 'users:dashboard' %}"
+                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 inline-flex items-center justify-center"
+                        title="User menu" aria-label="User menu">
+                        <i class="fas fa-user text-lg"></i>
+                    </a>
                     {% else %}
-                    <div class="flex items-center space-x-4">
-                        <a href="{% url 'users:login' %}"
-                            class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Login</a>
-                        <a href="{% url 'users:register' %}"
-                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">Sign
-                            Up</a>
-                    </div>
+                    <!-- Login/Signup -->
+                    <a href="{% url 'users:login' %}"
+                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 text-sm">Login</a>
+                    <a href="{% url 'users:register' %}"
+                        class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 hover:shadow-lg transition-all duration-300 text-sm">Sign
+                        Up</a>
                     {% endif %}
                 </div>
 
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button id="mobile-menu-button"
-                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                        aria-label="Toggle mobile menu">
-                        <i class="fas fa-bars text-xl"></i>
+                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
+                        aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu">
+                        <i id="mobile-menu-icon" class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Mobile Navigation -->
-            <div id="mobile-menu" class="md:hidden hidden">
-                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2">
+            <div id="mobile-menu" class="md:hidden hidden transition-all duration-300" role="navigation"
+                aria-hidden="true">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2 shadow-lg">
                     <a href="{% url 'home' %}"
-                        class="{% if request.resolver_match.url_name == 'home' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">Home</a>
+                        class="{% if request.resolver_match.url_name == 'home' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </a>
                     <a href="{% url 'courses:course_list' %}"
-                        class="{% if request.resolver_match.namespace == 'courses' and request.resolver_match.url_name == 'course_list' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">Courses</a>
-                    <a href="{% url 'courses:course_explorer' %}"
-                        class="{% if request.resolver_match.namespace == 'courses' and request.resolver_match.url_name == 'course_explorer' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">Explore</a>
+                        class="{% if request.resolver_match.namespace == 'courses' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
+                        <i class="fas fa-book mr-2"></i>Courses
+                    </a>
+                    <a href="{% url 'courses:course_list' %}"
+                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600 block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
+                        <i class="fas fa-compass mr-2"></i>Explore
+                    </a>
                     {% if user.is_authenticated and user.role == 'student' %}
                     <a href="{% url 'tutor:dashboard' %}"
-                        class="{% if request.resolver_match.namespace == 'tutor' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">
-                        <i class="fas fa-robot mr-2"></i>AI Tutor
+                        class="{% if request.resolver_match.namespace == 'tutor' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
+                        <i class="fas fa-brain mr-2"></i>AI Tutor
                     </a>
                     {% endif %}
-                    {% if request.resolver_match.url_name == 'home' %}
-                    <a href="#about"
-                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors">About</a>
-                    <a href="#contact"
-                        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors">Contact</a>
-                    {% else %}
                     <a href="{% url 'about' %}"
-                        class="{% if request.resolver_match.url_name == 'about' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">About</a>
+                        class="{% if request.resolver_match.url_name == 'about' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
+                        <i class="fas fa-info-circle mr-2"></i>About
+                    </a>
                     <a href="{% url 'contact' %}"
-                        class="{% if request.resolver_match.url_name == 'contact' %}bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-3 py-2 rounded transition-colors">Contact</a>
-                    {% endif %}
+                        class="{% if request.resolver_match.url_name == 'contact' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
+                        <i class="fas fa-envelope mr-2"></i>Contact
+                    </a>
 
                     {% if user.is_authenticated %}
                     <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
-                        <div class="px-3 py-2 text-gray-700 dark:text-gray-300 flex items-center">
-                            <div class="w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center mr-3">
+                        <div class="px-4 py-3 text-gray-700 dark:text-gray-300 flex items-center text-sm">
+                            <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-3">
                                 <i class="fas fa-user text-white text-xs"></i>
                             </div>
-                            Welcome, {{ user.username }}
+                            <span class="font-medium">{{ user.username }}</span>
                         </div>
                         <a href="{% url 'users:dashboard' %}"
-                            class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
-                            <i class="fas fa-tachometer-alt mr-3 text-primary-600"></i>
+                            class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
+                            <i class="fas fa-tachometer-alt mr-3 text-primary-600 w-5"></i>
                             Dashboard
                         </a>
                         <a href="{% url 'users:logout' %}"
-                            class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
-                            <i class="fas fa-sign-out-alt mr-3 text-red-600"></i>
+                            class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all duration-300 text-base active:bg-red-100 dark:active:bg-red-900/30">
+                            <i class="fas fa-sign-out-alt mr-3 text-red-600 w-5"></i>
                             Logout
                         </a>
                     </div>
                     {% else %}
-                    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
+                    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2 space-y-2">
                         <a href="{% url 'users:login' %}"
-                            class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Login</a>
+                            class="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login
+                        </a>
                         <a href="{% url 'users:register' %}"
-                            class="block px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">Sign
-                            Up</a>
+                            class="block px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 hover:shadow-md transition-all duration-300 text-center font-medium text-base active:bg-primary-800">
+                            <i class="fas fa-user-plus mr-2"></i>Sign Up
+                        </a>
                     </div>
                     {% endif %}
                 </div>
@@ -301,7 +307,8 @@
 
     <!-- Messages -->
     {% if messages %}
-    <div id="messages-container" class="fixed top-20 right-4 z-50 space-y-3 max-w-sm">
+    <div id="messages-container"
+        class="fixed top-20 right-2 sm:right-4 z-50 space-y-2 sm:space-y-3 max-w-[calc(100vw-1rem)] sm:max-w-sm">
         {% for message in messages %}
         <div class="message-alert bg-white dark:bg-gray-800 border-l-4 
                     {% if message.tags == 'success' %}border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200
@@ -309,32 +316,32 @@
                     {% elif message.tags == 'warning' %}border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200
                     {% elif message.tags == 'info' %}border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200
                     {% else %}border-gray-500 bg-gray-50 dark:bg-gray-900/20 text-gray-800 dark:text-gray-200{% endif %}
-                    rounded-lg shadow-lg p-4 transform transition-all duration-300 ease-in-out message-slide-in"
+                    rounded-lg shadow-lg p-3 sm:p-4 transform transition-all duration-300 ease-in-out message-slide-in"
             data-message-id="{{ forloop.counter }}">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
                     {% if message.tags == 'success' %}
-                    <i class="fas fa-check-circle text-green-500 text-lg"></i>
+                    <i class="fas fa-check-circle text-green-500 text-base sm:text-lg"></i>
                     {% elif message.tags == 'error' %}
-                    <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
+                    <i class="fas fa-exclamation-circle text-red-500 text-base sm:text-lg"></i>
                     {% elif message.tags == 'warning' %}
-                    <i class="fas fa-exclamation-triangle text-yellow-500 text-lg"></i>
+                    <i class="fas fa-exclamation-triangle text-yellow-500 text-base sm:text-lg"></i>
                     {% elif message.tags == 'info' %}
-                    <i class="fas fa-info-circle text-blue-500 text-lg"></i>
+                    <i class="fas fa-info-circle text-blue-500 text-base sm:text-lg"></i>
                     {% else %}
-                    <i class="fas fa-bell text-gray-500 text-lg"></i>
+                    <i class="fas fa-bell text-gray-500 text-base sm:text-lg"></i>
                     {% endif %}
                 </div>
-                <div class="ml-3 flex-1">
-                    <p class="text-sm font-medium">
+                <div class="ml-2 sm:ml-3 flex-1 min-w-0">
+                    <p class="text-xs sm:text-sm font-medium break-words">
                         {{ message }}
                     </p>
                 </div>
-                <div class="ml-4 flex-shrink-0">
+                <div class="ml-2 sm:ml-4 flex-shrink-0">
                     <button type="button"
-                        class="message-close inline-flex text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:text-gray-600 dark:focus:text-gray-200 transition-colors"
+                        class="message-close inline-flex text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:text-gray-600 dark:focus:text-gray-200 transition-colors p-1"
                         onclick="dismissMessage(this)" title="Dismiss message">
-                        <i class="fas fa-times text-sm"></i>
+                        <i class="fas fa-times text-xs sm:text-sm"></i>
                     </button>
                 </div>
             </div>
@@ -344,84 +351,92 @@
     {% endif %}
 
     <!-- Main Content -->
-    <main class="min-h-screen">
+    <main id="main-content" class="min-h-screen" role="main">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 dark:bg-gray-900 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer class="bg-gray-900 dark:bg-black text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
                 <!-- Company Info -->
-                <div class="col-span-1 md:col-span-2">
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-white text-lg"></i>
+                <div class="sm:col-span-2 md:col-span-1">
+                    <div class="flex items-center space-x-2 mb-3 sm:mb-4">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-base sm:text-lg"></i>
                         </div>
-                        <span class="text-xl font-bold">NeuroNest</span>
+                        <span class="text-lg sm:text-xl font-bold">NeuroNest</span>
                     </div>
-                    <p class="text-gray-300 mb-4 max-w-md">
+                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
                         Empowering learners worldwide with high-quality online education.
-                        Join thousands of students who have transformed their careers through our comprehensive courses.
                     </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Facebook">
-                            <i class="fab fa-facebook-f text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Twitter">
-                            <i class="fab fa-twitter text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin-in text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors" aria-label="Instagram">
-                            <i class="fab fa-instagram text-xl"></i>
-                        </a>
-                    </div>
                 </div>
 
-                <!-- Quick Links -->
+                <!-- Company Section -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="{% url 'home' %}" class="text-gray-300 hover:text-white transition-colors">Home</a>
-                        </li>
-                        <li><a href="#courses" class="text-gray-300 hover:text-white transition-colors">Courses</a></li>
-                        <li><a href="{% url 'about' %}" class="text-gray-300 hover:text-white transition-colors">About
+                    <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Company</h3>
+                    <ul class="space-y-1.5 sm:space-y-2">
+                        <li><a href="{% url 'about' %}"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">About
                                 Us</a></li>
-                        <li><a href="{% url 'contact' %}"
-                                class="text-gray-300 hover:text-white transition-colors">Contact</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Terms of Service</a>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Careers</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Blog</a>
                         </li>
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
+                <!-- Resources Section -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact Info</h3>
-                    <div class="space-y-2 text-gray-300">
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-envelope"></i>
-                            <span>info@NeuroNest.com</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-phone"></i>
-                            <span>+1 (555) 123-4567</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>123 Education St, Learning City</span>
-                        </div>
-                    </div>
+                    <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Resources</h3>
+                    <ul class="space-y-1.5 sm:space-y-2">
+                        <li><a href="{% url 'courses:course_list' %}"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Courses</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Support</a>
+                        </li>
+                        <li><a href="{% url 'contact' %}"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Help
+                                Center</a></li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">FAQ</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Legal Section -->
+                <div>
+                    <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Legal</h3>
+                    <ul class="space-y-1.5 sm:space-y-2">
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Privacy
+                                Policy</a></li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Terms
+                                of
+                                Service</a></li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Cookie
+                                Policy</a></li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-                <p>&copy; 2024 NeuroNest. All rights reserved. Made with ❤️ for learners worldwide.</p>
+            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+                <p class="text-gray-400 text-xs sm:text-sm">&copy; <span id="current-year">2024</span> NeuroNest. All
+                    rights
+                    reserved.</p>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Update copyright year dynamically
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
 
     <!-- AI Assistant Widget (only for authenticated students) -->
     {% if user.is_authenticated and user.role == 'student' %}
@@ -430,110 +445,14 @@
 
     <!-- Dark/Light Mode Toggle Button -->
     <button id="theme-toggle"
-        class="fixed bottom-6 right-6 w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 flex items-center justify-center"
+        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-11 h-11 sm:w-12 sm:h-12 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center justify-center"
         aria-label="Toggle dark/light mode">
-        <i id="theme-icon" class="fas fa-moon text-lg"></i>
+        <i id="theme-icon" class="fas fa-moon text-base sm:text-lg"></i>
     </button>
 
     <!-- JavaScript -->
     {% load static %}
     <script src="{% static 'elearning/js/main.js' %}"></script>
-    <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function () {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        const html = document.documentElement;
-
-        // Check for saved theme preference or default to 'light'
-        const currentTheme = localStorage.getItem('theme') || 'light';
-
-        // Apply the saved theme
-        if (currentTheme === 'dark') {
-            html.classList.add('dark');
-            themeIcon.className = 'fas fa-sun text-lg';
-        } else {
-            html.classList.remove('dark');
-            themeIcon.className = 'fas fa-moon text-lg';
-        }
-
-        // Theme toggle event listener
-        themeToggle.addEventListener('click', function () {
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                themeIcon.className = 'fas fa-moon text-lg';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                themeIcon.className = 'fas fa-sun text-lg';
-                localStorage.setItem('theme', 'dark');
-            }
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function (event) {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-
-            if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-                mobileMenu.classList.add('hidden');
-            }
-        });
-
-        // Messages functionality
-        function dismissMessage(button) {
-            const messageAlert = button.closest('.message-alert');
-            messageAlert.classList.remove('message-slide-in');
-            messageAlert.classList.add('message-slide-out');
-
-            setTimeout(() => {
-                if (messageAlert.parentNode) {
-                    messageAlert.remove();
-                }
-                // Remove container if no messages left
-                const container = document.getElementById('messages-container');
-                if (container && container.children.length === 0) {
-                    container.remove();
-                }
-            }, 300);
-        }
-
-        // Auto-dismiss messages after 4 seconds
-        document.addEventListener('DOMContentLoaded', function () {
-            const messages = document.querySelectorAll('.message-alert');
-            messages.forEach((message, index) => {
-                // Stagger the auto-dismiss timing
-                setTimeout(() => {
-                    const closeButton = message.querySelector('.message-close');
-                    if (closeButton && message.parentNode) {
-                        dismissMessage(closeButton);
-                    }
-                }, 4000 + (index * 500)); // 4s, 4.5s, 5s, etc.
-            });
-        });
-
-        // Make dismissMessage globally available
-        window.dismissMessage = dismissMessage;
-    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

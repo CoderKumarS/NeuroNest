@@ -1,7 +1,19 @@
 /**
  * Main JavaScript for NeuroNest E-Learning Platform
  * Handles common functionality across the platform
+ * Optimized for performance and accessibility
  */
+
+// Performance monitoring
+const perfData = window.performance && window.performance.timing;
+if (perfData) {
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+            console.log('Page load time:', loadTime + 'ms');
+        }, 0);
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     initializeElearning();
@@ -22,6 +34,12 @@ function initializeElearning() {
 
     // Initialize form enhancements
     initializeFormEnhancements();
+
+    // Initialize filter auto-submit
+    initializeFilterAutoSubmit();
+
+    // Initialize search functionality
+    initializeSearchFunctionality();
 }
 
 function initializeSmoothScrolling() {
@@ -69,7 +87,6 @@ function initializeSectionHighlighting() {
 
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
 
             if (window.pageYOffset >= sectionTop - 200) {
                 current = section.getAttribute('id');
@@ -107,16 +124,69 @@ function initializeSectionHighlighting() {
 function initializeMobileMenu() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('mobile-menu-icon');
 
     if (mobileMenuButton && mobileMenu) {
-        mobileMenuButton.addEventListener('click', function () {
+        mobileMenuButton.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isHidden = mobileMenu.classList.contains('hidden');
+
             mobileMenu.classList.toggle('hidden');
+
+            // Update ARIA attributes for accessibility
+            mobileMenuButton.setAttribute('aria-expanded', !isHidden);
+            mobileMenu.setAttribute('aria-hidden', isHidden);
+
+            // Toggle icon between bars and times
+            if (menuIcon) {
+                if (isHidden) {
+                    menuIcon.classList.remove('fa-bars');
+                    menuIcon.classList.add('fa-times');
+                } else {
+                    menuIcon.classList.remove('fa-times');
+                    menuIcon.classList.add('fa-bars');
+                }
+            }
         });
 
         // Close mobile menu when clicking outside
         document.addEventListener('click', function (event) {
             if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    if (menuIcon) {
+                        menuIcon.classList.remove('fa-times');
+                        menuIcon.classList.add('fa-bars');
+                    }
+                }
+            }
+        });
+
+        // Close mobile menu when clicking on a link
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', function () {
                 mobileMenu.classList.add('hidden');
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
+                mobileMenu.setAttribute('aria-hidden', 'true');
+                if (menuIcon) {
+                    menuIcon.classList.remove('fa-times');
+                    menuIcon.classList.add('fa-bars');
+                }
+            });
+        });
+
+        // Close mobile menu with Escape key for accessibility
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
+                mobileMenu.setAttribute('aria-hidden', 'true');
+                if (menuIcon) {
+                    menuIcon.classList.remove('fa-times');
+                    menuIcon.classList.add('fa-bars');
+                }
+                mobileMenuButton.focus(); // Return focus to button
             }
         });
     }
@@ -135,21 +205,21 @@ function initializeThemeToggle() {
     // Apply the saved theme
     if (currentTheme === 'dark') {
         html.classList.add('dark');
-        themeIcon.className = 'fas fa-sun text-lg';
+        themeIcon.className = 'fas fa-sun text-base sm:text-lg';
     } else {
         html.classList.remove('dark');
-        themeIcon.className = 'fas fa-moon text-lg';
+        themeIcon.className = 'fas fa-moon text-base sm:text-lg';
     }
 
     // Theme toggle event listener
     themeToggle.addEventListener('click', function () {
         if (html.classList.contains('dark')) {
             html.classList.remove('dark');
-            themeIcon.className = 'fas fa-moon text-lg';
+            themeIcon.className = 'fas fa-moon text-base sm:text-lg';
             localStorage.setItem('theme', 'light');
         } else {
             html.classList.add('dark');
-            themeIcon.className = 'fas fa-sun text-lg';
+            themeIcon.className = 'fas fa-sun text-base sm:text-lg';
             localStorage.setItem('theme', 'dark');
         }
     });
@@ -262,6 +332,77 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+function initializeFilterAutoSubmit() {
+    // Auto-submit filter forms when dropdowns change (for course list page)
+    const filterForms = document.querySelectorAll('form');
+
+    filterForms.forEach(form => {
+        // Check if this is a filter form (has select elements for filtering)
+        const selectElements = form.querySelectorAll('select[name="category"], select[name="instructor"], select[name="min_rating"], select[name="sort"]');
+
+        if (selectElements.length > 0) {
+            selectElements.forEach(select => {
+                select.addEventListener('change', function () {
+                    // Add a small delay to allow user to see the change
+                    setTimeout(() => {
+                        // Check if form has a submit button to add loading state
+                        const submitButton = form.querySelector('button[type="submit"]');
+                        if (submitButton) {
+                            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Applying...';
+                            submitButton.disabled = true;
+                        }
+                        form.submit();
+                    }, 100);
+                });
+            });
+        }
+    });
+}
+
+function initializeSearchFunctionality() {
+    // Handle search form submissions
+    const searchForms = document.querySelectorAll('form');
+
+    searchForms.forEach(form => {
+        const searchInput = form.querySelector('input[name="search"]');
+
+        if (searchInput) {
+            // Add search icon button functionality
+            const searchButton = form.querySelector('button[type="submit"]');
+
+            if (searchButton) {
+                searchButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Trim whitespace from search query
+                    searchInput.value = searchInput.value.trim();
+
+                    // Submit the form
+                    form.submit();
+                });
+            }
+
+            // Allow Enter key to submit search
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchInput.value = searchInput.value.trim();
+                    form.submit();
+                }
+            });
+
+            // Add focus/blur effects for better UX
+            searchInput.addEventListener('focus', function () {
+                this.parentElement.classList.add('ring-2', 'ring-purple-300');
+            });
+
+            searchInput.addEventListener('blur', function () {
+                this.parentElement.classList.remove('ring-2', 'ring-purple-300');
+            });
+        }
+    });
 }
 
 // Make functions globally available
