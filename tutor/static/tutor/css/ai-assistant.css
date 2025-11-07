@@ -120,6 +120,27 @@
     }
 }
 
+/* Desktop positioning for AI assistant window */
+@media (min-width: 641px) {
+    #ai-assistant-window {
+        bottom: 6rem !important;
+        right: 1.5rem !important;
+    }
+}
+
+/* AI Assistant positioning fixes */
+#ai-assistant-button {
+    position: fixed !important;
+    bottom: 6rem !important;
+    right: 1.5rem !important;
+    z-index: 40 !important;
+}
+
+#ai-assistant-window {
+    position: fixed !important;
+    z-index: 50 !important;
+}
+
 /* Fix for bottom positioning */
 .bottom-28 {
     bottom: 7rem;
