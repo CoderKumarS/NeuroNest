@@ -136,10 +136,10 @@ STATIC_URL = '/static/'
 # Static files will be collected here for production
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Additional locations of static files (if you have a main static directory)
-# STATICFILES_DIRS = [
-#     BASE_DIR / 'static',
-# ]
+# Additional locations of static files
+STATICFILES_DIRS = [
+    BASE_DIR / 'elearning' / 'static',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

@@ -1,460 +1,608 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description"
-        content="NeuroNest - Online learning platform with AI-powered tutoring and expert-led courses">
-    <meta name="theme-color" content="#7c3aed">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="NeuroNest - Online learning platform with AI-powered tutoring and expert-led courses"
+    />
+    <meta name="theme-color" content="#7c3aed" />
     <title>{% block title %}E-Learning Platform{% endblock %}</title>
 
     <!-- Preconnect to CDN for better performance -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Custom Tailwind Configuration -->
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                        }
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#eff6ff",
+                100: "#dbeafe",
+                200: "#bfdbfe",
+                300: "#93c5fd",
+                400: "#60a5fa",
+                500: "#3b82f6",
+                600: "#2563eb",
+                700: "#1d4ed8",
+                800: "#1e40af",
+                900: "#1e3a8a",
+              },
+            },
+          },
+        },
+      };
     </script>
 
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
 
     <!-- Alpine.js for dropdown functionality -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
 
     <!-- Custom CSS for animations and gradients -->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'elearning/css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'elearning/css/custom.css' %}" />
 
     <!-- Custom CSS -->
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .dark .gradient-bg {
+        background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+      }
+
+      /* Message animations */
+      .message-slide-in {
+        animation: slideInFromRight 0.3s ease-out forwards;
+      }
+
+      @keyframes slideInFromRight {
+        from {
+          opacity: 0;
+          transform: translateX(100%);
         }
 
-        .dark .gradient-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .message-slide-out {
+        animation: slideOutToRight 0.3s ease-in forwards;
+      }
+
+      @keyframes slideOutToRight {
+        from {
+          opacity: 1;
+          transform: translateX(0);
         }
 
-        /* Message animations */
-        .message-slide-in {
-            animation: slideInFromRight 0.3s ease-out forwards;
+        to {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+      }
+
+      /* Message container styling */
+      #messages-container {
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .message-alert {
+        max-height: 200px;
+        overflow-y: auto;
+        word-wrap: break-word;
+      }
+
+      /* Mobile navigation active state */
+      .mobile-nav-active {
+        background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+        border-left: 4px solid #7c3aed;
+      }
+
+      .dark .mobile-nav-active {
+        background: linear-gradient(135deg, #581c87, #6d28d9);
+        border-left: 4px solid #a78bfa;
+      }
+
+      /* Navbar shadow */
+      nav {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      /* Touch-friendly minimum sizes for mobile */
+      @media (max-width: 768px) {
+        button,
+        a {
+          min-height: 44px;
+          /* iOS recommended touch target size */
         }
 
-        @keyframes slideInFromRight {
-            from {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        /* Ensure mobile menu items are touch-friendly */
+        #mobile-menu a {
+          min-height: 48px;
+          display: flex;
+          align-items: center;
         }
+      }
 
-        .message-slide-out {
-            animation: slideOutToRight 0.3s ease-in forwards;
+      /* Prevent text selection on buttons for better mobile UX */
+      button {
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+
+      /* Smooth scrolling for the entire page */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Improve readability on small screens */
+      @media (max-width: 640px) {
+        body {
+          font-size: 14px;
         }
-
-        @keyframes slideOutToRight {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            to {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-        }
-
-        /* Message container styling */
-        #messages-container {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .message-alert {
-            max-height: 200px;
-            overflow-y: auto;
-            word-wrap: break-word;
-        }
-
-        /* Mobile navigation active state */
-        .mobile-nav-active {
-            background: linear-gradient(135deg, #f3e8ff, #ede9fe);
-            border-left: 4px solid #7c3aed;
-        }
-
-        .dark .mobile-nav-active {
-            background: linear-gradient(135deg, #581c87, #6d28d9);
-            border-left: 4px solid #a78bfa;
-        }
-
-        /* Navbar shadow */
-        nav {
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        /* Touch-friendly minimum sizes for mobile */
-        @media (max-width: 768px) {
-
-            button,
-            a {
-                min-height: 44px;
-                /* iOS recommended touch target size */
-            }
-
-            /* Ensure mobile menu items are touch-friendly */
-            #mobile-menu a {
-                min-height: 48px;
-                display: flex;
-                align-items: center;
-            }
-        }
-
-        /* Prevent text selection on buttons for better mobile UX */
-        button {
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        /* Smooth scrolling for the entire page */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Improve readability on small screens */
-        @media (max-width: 640px) {
-            body {
-                font-size: 14px;
-            }
-        }
+      }
     </style>
 
     {% block extra_css %}{% endblock %}
-</head>
+  </head>
 
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+  <body
+    class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+  >
     <!-- Skip to main content link for accessibility -->
-    <a href="#main-content"
-        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-lg focus:shadow-lg">
-        Skip to main content
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-lg focus:shadow-lg"
+    >
+      Skip to main content
     </a>
 
     <!-- Navigation -->
-    <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="{% url 'home' %}" class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-white text-lg"></i>
-                        </div>
-                        <span class="text-xl font-bold text-gray-900 dark:text-white">NeuroNest</span>
-                    </a>
-                </div>
+    <nav
+      class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 transition-colors duration-300"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <a href="{% url 'home' %}" class="flex items-center space-x-2">
+              <div
+                class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-graduation-cap text-white text-lg"></i>
+              </div>
+              <span class="text-xl font-bold text-gray-900 dark:text-white"
+                >NeuroNest</span
+              >
+            </a>
+          </div>
 
-                <!-- Desktop Navigation - Left aligned after logo -->
-                <div class="hidden md:flex items-center space-x-8 ml-12">
-                    <a href="{% url 'home' %}"
-                        class="{% if request.resolver_match.url_name == 'home' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">Home</a>
-                    <a href="{% url 'courses:course_list' %}"
-                        class="{% if request.resolver_match.namespace == 'courses' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">Courses</a>
-                    <a href="{% url 'courses:course_list' %}"
-                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 text-sm">Explore</a>
-                    {% if user.is_authenticated and user.role == 'student' %}
-                    <a href="{% url 'tutor:dashboard' %}"
-                        class="{% if request.resolver_match.namespace == 'tutor' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">AI
-                        Tutor</a>
-                    {% endif %}
-                    <a href="{% url 'about' %}"
-                        class="{% if request.resolver_match.url_name == 'about' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">About</a>
-                    <a href="{% url 'contact' %}"
-                        class="{% if request.resolver_match.url_name == 'contact' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm">Contact</a>
-                </div>
+          <!-- Desktop Navigation - Left aligned after logo -->
+          <div class="hidden md:flex items-center space-x-8 ml-12">
+            <a
+              href="{% url 'home' %}"
+              class="{% if request.resolver_match.url_name == 'home' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm"
+              >Home</a
+            >
+            <a
+              href="{% url 'courses:course_list' %}"
+              class="{% if request.resolver_match.namespace == 'courses' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm"
+              >Courses</a
+            >
+            <a
+              href="{% url 'courses:course_list' %}"
+              class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 text-sm"
+              >Explore</a
+            >
+            {% if user.is_authenticated and user.role == 'student' %}
+            <a
+              href="{% url 'tutor:dashboard' %}"
+              class="{% if request.resolver_match.namespace == 'tutor' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm"
+              >AI Tutor</a
+            >
+            {% endif %}
+            <a
+              href="{% url 'about' %}"
+              class="{% if request.resolver_match.url_name == 'about' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm"
+              >About</a
+            >
+            <a
+              href="{% url 'contact' %}"
+              class="{% if request.resolver_match.url_name == 'contact' %}text-purple-600 dark:text-purple-400 font-medium{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400{% endif %} transition-colors duration-300 text-sm"
+              >Contact</a
+            >
+          </div>
 
-                <!-- Right Section - Icons only -->
-                <div class="hidden md:flex items-center space-x-3">
-                    {% if user.is_authenticated %}
-                    <!-- Notification Bell -->
-                    <button
-                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                        title="Notifications" aria-label="Notifications">
-                        <i class="fas fa-bell text-lg"></i>
-                    </button>
+          <!-- Right Section - Icons only -->
+          <div class="hidden md:flex items-center space-x-3">
+            {% if user.is_authenticated %}
+            <!-- Notification Bell -->
+            <button
+              class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <i class="fas fa-bell text-lg"></i>
+            </button>
 
-                    <!-- User Avatar -->
-                    <a href="{% url 'users:dashboard' %}"
-                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 inline-flex items-center justify-center"
-                        title="User menu" aria-label="User menu">
-                        <i class="fas fa-user text-lg"></i>
-                    </a>
-                    {% else %}
-                    <!-- Login/Signup -->
-                    <a href="{% url 'users:login' %}"
-                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 text-sm">Login</a>
-                    <a href="{% url 'users:register' %}"
-                        class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 hover:shadow-lg transition-all duration-300 text-sm">Sign
-                        Up</a>
-                    {% endif %}
-                </div>
+            <!-- User Avatar -->
+            <a
+              href="{% url 'users:dashboard' %}"
+              class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 inline-flex items-center justify-center"
+              title="User menu"
+              aria-label="User menu"
+            >
+              <i class="fas fa-user text-lg"></i>
+            </a>
+            {% else %}
+            <!-- Login/Signup -->
+            <a
+              href="{% url 'users:login' %}"
+              class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 text-sm"
+              >Login</a
+            >
+            <a
+              href="{% url 'users:register' %}"
+              class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 hover:shadow-lg transition-all duration-300 text-sm"
+              >Sign Up</a
+            >
+            {% endif %}
+          </div>
 
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-button"
-                        class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
-                        aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu">
-                        <i id="mobile-menu-icon" class="fas fa-bars text-xl"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Mobile Navigation -->
-            <div id="mobile-menu" class="md:hidden hidden transition-all duration-300" role="navigation"
-                aria-hidden="true">
-                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2 shadow-lg">
-                    <a href="{% url 'home' %}"
-                        class="{% if request.resolver_match.url_name == 'home' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
-                        <i class="fas fa-home mr-2"></i>Home
-                    </a>
-                    <a href="{% url 'courses:course_list' %}"
-                        class="{% if request.resolver_match.namespace == 'courses' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
-                        <i class="fas fa-book mr-2"></i>Courses
-                    </a>
-                    <a href="{% url 'courses:course_list' %}"
-                        class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600 block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
-                        <i class="fas fa-compass mr-2"></i>Explore
-                    </a>
-                    {% if user.is_authenticated and user.role == 'student' %}
-                    <a href="{% url 'tutor:dashboard' %}"
-                        class="{% if request.resolver_match.namespace == 'tutor' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
-                        <i class="fas fa-brain mr-2"></i>AI Tutor
-                    </a>
-                    {% endif %}
-                    <a href="{% url 'about' %}"
-                        class="{% if request.resolver_match.url_name == 'about' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
-                        <i class="fas fa-info-circle mr-2"></i>About
-                    </a>
-                    <a href="{% url 'contact' %}"
-                        class="{% if request.resolver_match.url_name == 'contact' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
-                        <i class="fas fa-envelope mr-2"></i>Contact
-                    </a>
-
-                    {% if user.is_authenticated %}
-                    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
-                        <div class="px-4 py-3 text-gray-700 dark:text-gray-300 flex items-center text-sm">
-                            <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-user text-white text-xs"></i>
-                            </div>
-                            <span class="font-medium">{{ user.username }}</span>
-                        </div>
-                        <a href="{% url 'users:dashboard' %}"
-                            class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
-                            <i class="fas fa-tachometer-alt mr-3 text-primary-600 w-5"></i>
-                            Dashboard
-                        </a>
-                        <a href="{% url 'users:logout' %}"
-                            class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all duration-300 text-base active:bg-red-100 dark:active:bg-red-900/30">
-                            <i class="fas fa-sign-out-alt mr-3 text-red-600 w-5"></i>
-                            Logout
-                        </a>
-                    </div>
-                    {% else %}
-                    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2 space-y-2">
-                        <a href="{% url 'users:login' %}"
-                            class="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Login
-                        </a>
-                        <a href="{% url 'users:register' %}"
-                            class="block px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 hover:shadow-md transition-all duration-300 text-center font-medium text-base active:bg-primary-800">
-                            <i class="fas fa-user-plus mr-2"></i>Sign Up
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button
+              id="mobile-menu-button"
+              class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
+              aria-label="Toggle mobile menu"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+            >
+              <i id="mobile-menu-icon" class="fas fa-bars text-xl"></i>
+            </button>
+          </div>
         </div>
+
+        <!-- Mobile Navigation -->
+        <div
+          id="mobile-menu"
+          class="md:hidden hidden transition-all duration-300"
+          role="navigation"
+          aria-hidden="true"
+        >
+          <div
+            class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2 shadow-lg"
+          >
+            <a
+              href="{% url 'home' %}"
+              class="{% if request.resolver_match.url_name == 'home' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500"
+            >
+              <i class="fas fa-home mr-2"></i>Home
+            </a>
+            <a
+              href="{% url 'courses:course_list' %}"
+              class="{% if request.resolver_match.namespace == 'courses' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500"
+            >
+              <i class="fas fa-book mr-2"></i>Courses
+            </a>
+            <a
+              href="{% url 'courses:course_list' %}"
+              class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600 block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500"
+            >
+              <i class="fas fa-compass mr-2"></i>Explore
+            </a>
+            {% if user.is_authenticated and user.role == 'student' %}
+            <a
+              href="{% url 'tutor:dashboard' %}"
+              class="{% if request.resolver_match.namespace == 'tutor' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500"
+            >
+              <i class="fas fa-brain mr-2"></i>AI Tutor
+            </a>
+            {% endif %}
+            <a
+              href="{% url 'about' %}"
+              class="{% if request.resolver_match.url_name == 'about' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500"
+            >
+              <i class="fas fa-info-circle mr-2"></i>About
+            </a>
+            <a
+              href="{% url 'contact' %}"
+              class="{% if request.resolver_match.url_name == 'contact' %}mobile-nav-active text-purple-600 dark:text-purple-400 font-semibold{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-600{% endif %} block px-4 py-3 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500"
+            >
+              <i class="fas fa-envelope mr-2"></i>Contact
+            </a>
+
+            {% if user.is_authenticated %}
+            <div
+              class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2"
+            >
+              <div
+                class="px-4 py-3 text-gray-700 dark:text-gray-300 flex items-center text-sm"
+              >
+                <div
+                  class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center mr-3"
+                >
+                  <i class="fas fa-user text-white text-xs"></i>
+                </div>
+                <span class="font-medium">{{ user.username }}</span>
+              </div>
+              <a
+                href="{% url 'users:dashboard' %}"
+                class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500"
+              >
+                <i class="fas fa-tachometer-alt mr-3 text-primary-600 w-5"></i>
+                Dashboard
+              </a>
+              <a
+                href="{% url 'users:logout' %}"
+                class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all duration-300 text-base active:bg-red-100 dark:active:bg-red-900/30"
+              >
+                <i class="fas fa-sign-out-alt mr-3 text-red-600 w-5"></i>
+                Logout
+              </a>
+            </div>
+            {% else %}
+            <div
+              class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2 space-y-2"
+            >
+              <a
+                href="{% url 'users:login' %}"
+                class="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-all duration-300 text-base active:bg-gray-200 dark:active:bg-gray-500"
+              >
+                <i class="fas fa-sign-in-alt mr-2"></i>Login
+              </a>
+              <a
+                href="{% url 'users:register' %}"
+                class="block px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 hover:shadow-md transition-all duration-300 text-center font-medium text-base active:bg-primary-800"
+              >
+                <i class="fas fa-user-plus mr-2"></i>Sign Up
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </nav>
 
     <!-- Messages -->
     {% if messages %}
-    <div id="messages-container"
-        class="fixed top-20 right-2 sm:right-4 z-50 space-y-2 sm:space-y-3 max-w-[calc(100vw-1rem)] sm:max-w-sm">
-        {% for message in messages %}
-        <div class="message-alert bg-white dark:bg-gray-800 border-l-4 
-                    {% if message.tags == 'success' %}border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200
-                    {% elif message.tags == 'error' %}border-red-500 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200
-                    {% elif message.tags == 'warning' %}border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200
-                    {% elif message.tags == 'info' %}border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200
-                    {% else %}border-gray-500 bg-gray-50 dark:bg-gray-900/20 text-gray-800 dark:text-gray-200{% endif %}
-                    rounded-lg shadow-lg p-3 sm:p-4 transform transition-all duration-300 ease-in-out message-slide-in"
-            data-message-id="{{ forloop.counter }}">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    {% if message.tags == 'success' %}
-                    <i class="fas fa-check-circle text-green-500 text-base sm:text-lg"></i>
-                    {% elif message.tags == 'error' %}
-                    <i class="fas fa-exclamation-circle text-red-500 text-base sm:text-lg"></i>
-                    {% elif message.tags == 'warning' %}
-                    <i class="fas fa-exclamation-triangle text-yellow-500 text-base sm:text-lg"></i>
-                    {% elif message.tags == 'info' %}
-                    <i class="fas fa-info-circle text-blue-500 text-base sm:text-lg"></i>
-                    {% else %}
-                    <i class="fas fa-bell text-gray-500 text-base sm:text-lg"></i>
-                    {% endif %}
-                </div>
-                <div class="ml-2 sm:ml-3 flex-1 min-w-0">
-                    <p class="text-xs sm:text-sm font-medium break-words">
-                        {{ message }}
-                    </p>
-                </div>
-                <div class="ml-2 sm:ml-4 flex-shrink-0">
-                    <button type="button"
-                        class="message-close inline-flex text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:text-gray-600 dark:focus:text-gray-200 transition-colors p-1"
-                        onclick="dismissMessage(this)" title="Dismiss message">
-                        <i class="fas fa-times text-xs sm:text-sm"></i>
-                    </button>
-                </div>
-            </div>
+    <div
+      id="messages-container"
+      class="fixed top-20 right-2 sm:right-4 z-50 space-y-2 sm:space-y-3 max-w-[calc(100vw-1rem)] sm:max-w-sm"
+    >
+      {% for message in messages %}
+      <div
+        class="message-alert bg-white dark:bg-gray-800 border-l-4 {% if message.tags == 'success' %}border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 {% elif message.tags == 'error' %}border-red-500 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 {% elif message.tags == 'warning' %}border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 {% elif message.tags == 'info' %}border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 {% else %}border-gray-500 bg-gray-50 dark:bg-gray-900/20 text-gray-800 dark:text-gray-200{% endif %} rounded-lg shadow-lg p-3 sm:p-4 transform transition-all duration-300 ease-in-out message-slide-in"
+        data-message-id="{{ forloop.counter }}"
+      >
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            {% if message.tags == 'success' %}
+            <i
+              class="fas fa-check-circle text-green-500 text-base sm:text-lg"
+            ></i>
+            {% elif message.tags == 'error' %}
+            <i
+              class="fas fa-exclamation-circle text-red-500 text-base sm:text-lg"
+            ></i>
+            {% elif message.tags == 'warning' %}
+            <i
+              class="fas fa-exclamation-triangle text-yellow-500 text-base sm:text-lg"
+            ></i>
+            {% elif message.tags == 'info' %}
+            <i
+              class="fas fa-info-circle text-blue-500 text-base sm:text-lg"
+            ></i>
+            {% else %}
+            <i class="fas fa-bell text-gray-500 text-base sm:text-lg"></i>
+            {% endif %}
+          </div>
+          <div class="ml-2 sm:ml-3 flex-1 min-w-0">
+            <p class="text-xs sm:text-sm font-medium break-words">
+              {{ message }}
+            </p>
+          </div>
+          <div class="ml-2 sm:ml-4 flex-shrink-0">
+            <button
+              type="button"
+              class="message-close inline-flex text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:text-gray-600 dark:focus:text-gray-200 transition-colors p-1"
+              onclick="dismissMessage(this)"
+              title="Dismiss message"
+            >
+              <i class="fas fa-times text-xs sm:text-sm"></i>
+            </button>
+          </div>
         </div>
-        {% endfor %}
+      </div>
+      {% endfor %}
     </div>
     {% endif %}
 
     <!-- Main Content -->
     <main id="main-content" class="min-h-screen" role="main">
-        {% block content %}{% endblock %}
+      {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
     <footer class="bg-gray-900 dark:bg-black text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
-                <!-- Company Info -->
-                <div class="sm:col-span-2 md:col-span-1">
-                    <div class="flex items-center space-x-2 mb-3 sm:mb-4">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-white text-base sm:text-lg"></i>
-                        </div>
-                        <span class="text-lg sm:text-xl font-bold">NeuroNest</span>
-                    </div>
-                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
-                        Empowering learners worldwide with high-quality online education.
-                    </p>
-                </div>
-
-                <!-- Company Section -->
-                <div>
-                    <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Company</h3>
-                    <ul class="space-y-1.5 sm:space-y-2">
-                        <li><a href="{% url 'about' %}"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">About
-                                Us</a></li>
-                        <li><a href="#"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Careers</a>
-                        </li>
-                        <li><a href="#"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Blog</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Resources Section -->
-                <div>
-                    <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Resources</h3>
-                    <ul class="space-y-1.5 sm:space-y-2">
-                        <li><a href="{% url 'courses:course_list' %}"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Courses</a>
-                        </li>
-                        <li><a href="#"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Support</a>
-                        </li>
-                        <li><a href="{% url 'contact' %}"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Help
-                                Center</a></li>
-                        <li><a href="#"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">FAQ</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Legal Section -->
-                <div>
-                    <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Legal</h3>
-                    <ul class="space-y-1.5 sm:space-y-2">
-                        <li><a href="#"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Privacy
-                                Policy</a></li>
-                        <li><a href="#"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Terms
-                                of
-                                Service</a></li>
-                        <li><a href="#"
-                                class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1">Cookie
-                                Policy</a></li>
-                    </ul>
-                </div>
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12"
+      >
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8"
+        >
+          <!-- Company Info -->
+          <div class="sm:col-span-2 md:col-span-1">
+            <div class="flex items-center space-x-2 mb-3 sm:mb-4">
+              <div
+                class="w-7 h-7 sm:w-8 sm:h-8 bg-purple-600 rounded-lg flex items-center justify-center"
+              >
+                <i
+                  class="fas fa-graduation-cap text-white text-base sm:text-lg"
+                ></i>
+              </div>
+              <span class="text-lg sm:text-xl font-bold">NeuroNest</span>
             </div>
+            <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
+              Empowering learners worldwide with high-quality online education.
+            </p>
+          </div>
 
-            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
-                <p class="text-gray-400 text-xs sm:text-sm">&copy; <span id="current-year">2024</span> NeuroNest. All
-                    rights
-                    reserved.</p>
-            </div>
+          <!-- Company Section -->
+          <div>
+            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+              Company
+            </h3>
+            <ul class="space-y-1.5 sm:space-y-2">
+              <li>
+                <a
+                  href="{% url 'about' %}"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >About Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >Careers</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >Blog</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Resources Section -->
+          <div>
+            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+              Resources
+            </h3>
+            <ul class="space-y-1.5 sm:space-y-2">
+              <li>
+                <a
+                  href="{% url 'courses:course_list' %}"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >Courses</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >Support</a
+                >
+              </li>
+              <li>
+                <a
+                  href="{% url 'contact' %}"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >FAQ</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Legal Section -->
+          <div>
+            <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+              Legal
+            </h3>
+            <ul class="space-y-1.5 sm:space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >Terms of Service</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors duration-300 text-xs sm:text-sm block py-1"
+                  >Cookie Policy</a
+                >
+              </li>
+            </ul>
+          </div>
         </div>
+
+        <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+          <p class="text-gray-400 text-xs sm:text-sm">
+            &copy; <span id="current-year">2024</span> NeuroNest. All rights
+            reserved.
+          </p>
+        </div>
+      </div>
     </footer>
 
     <script>
-        // Update copyright year dynamically
-        document.getElementById('current-year').textContent = new Date().getFullYear();
+      // Update copyright year dynamically
+      document.getElementById("current-year").textContent =
+        new Date().getFullYear();
     </script>
 
     <!-- AI Assistant Widget (only for authenticated students) -->
-    {% if user.is_authenticated and user.role == 'student' %}
-    {% include 'tutor/ai_assistant_widget.html' %}
-    {% endif %}
+    {% if user.is_authenticated and user.role == 'student' %} {% include
+    'tutor/ai_assistant_widget.html' %} {% endif %}
 
     <!-- Dark/Light Mode Toggle Button -->
-    <button id="theme-toggle"
-        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-11 h-11 sm:w-12 sm:h-12 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center justify-center"
-        aria-label="Toggle dark/light mode">
-        <i id="theme-icon" class="fas fa-moon text-base sm:text-lg"></i>
+    <button
+      id="theme-toggle"
+      class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-11 h-11 sm:w-12 sm:h-12 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center justify-center"
+      aria-label="Toggle dark/light mode"
+    >
+      <i id="theme-icon" class="fas fa-moon text-base sm:text-lg"></i>
     </button>
+
+    {% block extra_js %}{% endblock %}
 
     <!-- JavaScript -->
     {% load static %}
     <script src="{% static 'elearning/js/main.js' %}"></script>
-
-    {% block extra_js %}{% endblock %}
-</body>
-
+  </body>
 </html>

@@ -10,7 +10,6 @@ if (perfData) {
     window.addEventListener('load', function () {
         setTimeout(function () {
             const loadTime = perfData.loadEventEnd - perfData.navigationStart;
-            console.log('Page load time:', loadTime + 'ms');
         }, 0);
     });
 }
@@ -197,7 +196,6 @@ function initializeThemeToggle() {
     const themeIcon = document.getElementById('theme-icon');
     const html = document.documentElement;
 
-    if (!themeToggle || !themeIcon) return;
 
     // Check for saved theme preference or default to 'light'
     const currentTheme = localStorage.getItem('theme') || 'light';
