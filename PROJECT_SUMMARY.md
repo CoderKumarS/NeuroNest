@@ -123,7 +123,7 @@
 - **Google AI**: Alternative AI provider support
 - **Anthropic Claude**: Optional AI integration
 
-### External Services
+### External Services (future scope)
 - **Email**: SMTP integration for notifications
 - **Storage**: AWS S3 for file storage (optional)
 - **Analytics**: Google Analytics integration (optional)
@@ -137,7 +137,7 @@
 - Debug mode enabled
 - Local static file serving
 
-### Production
+### Production(pending)
 - PostgreSQL/MySQL database
 - SMTP email configuration
 - Static file optimization
