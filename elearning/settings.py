@@ -150,3 +150,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+CSRF_TRUSTED_ORIGINS = [
+    'https://neuronest-poyi.onrender.com',
+]
